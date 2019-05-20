@@ -1,28 +1,82 @@
 import Client from 'shopify-buy';
-import Cookies from 'js-cookie';
 
 import {on} from './utils';
 
+/**
+ * Headerless Shopify.
+ */
 const client = Client.buildClient({
   domain: 'heedless.myshopify.com',
   storefrontAccessToken: 'ebc823ca217a89fecdc9cce9f063e902'
 });
 
+/**
+ * Global variables.
+ */
 let checkoutId = '';
+let products = {};
 
-// Create an empty checkout
+/**
+ * Creates empty checkout.
+ */
 client.checkout.create().then((checkout) => {
   checkoutId = checkout.id;
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadProducts();
-  addEventListeners();
-});
+/**
+ * Handle forward/back browser navigation
+ */
+window.onpopstate = function() {
+  checkUrl();
+}
 
-function loadProducts() {
+/**
+ * Check page's URL to load based on that.
+ */
+function checkUrl() {
+  if (location.href === `${location.origin}/`) {
+    renderHomepage();
+    return;
+  }
+
+  if (location.search) {
+    const productHandle = location.search.replace('?product=', '');
+    checkProductCache(productHandle);
+    return;
+  }
+}
+
+/**
+ * Update the history state.
+ * @param {String} title history title.
+ * @param {String} url the history url.
+ */
+function updateHistory(title, url) {
+  window.history.pushState({
+    'html': '',
+    'pageTitle': title,
+  }, '', url);
+}
+
+/**
+ * Render the homepage (all products).
+ */
+function renderHomepage() {
+  if (products) {
+    console.log('cached products');
+    renderProducts(products);
+  } else {
+    loadProductsFromApi();
+  }
+}
+
+function loadProductsFromApi() {
+  console.log('load products');
+
   client.product.fetchAll().then((products) => {
     renderProducts(products);
+
+    localStorage.setItem('products', JSON.stringify(products));
   });
 }
 
@@ -43,47 +97,43 @@ function renderProducts(products) {
 // Listen for all click events, filter by needed
 function addEventListeners() {
   on('click', document.querySelector('body'), (event) => {
-    if (isAddToCartButton(event.target)) {
-      addToCart(event.target);
+    if (isCorrectButton(event.target, 'addToCart')) {
+      handleAddToCartClick(event.target);
       return;
     }
 
-    if (isViewProductButton(event.target)) {
-      viewProduct(event.target);
+    if (isCorrectButton(event.target, 'viewProduct')) {
+      handleViewProductClick(event.target);
       return;
     }
 
-    if (isCloseProductButton(event.target)) {
-      closeProduct();
+    if (isCorrectButton(event.target, 'closeProduct')) {
+      handleCloseProductClick();
       return;
     }
   });
 }
 
-// Test if correct target
-function isAddToCartButton(target) {
+/**
+ * Test for correct button.
+ * @param {HTMLElement} target the clicked item.
+ * @param {String} attribute the desired attribute.
+ * @returns {Boolean} whether it's the correct element.
+ */
+function isCorrectButton(target, attribute) {
   return (
     typeof target.attributes['js-page'] !== 'undefined' &&
-    target.getAttribute('js-page') === 'addToCart'
+    target.getAttribute('js-page') === attribute
   );
 }
 
-function isViewProductButton(target) {
-  return (
-    typeof target.attributes['js-page'] !== 'undefined' &&
-    target.getAttribute('js-page') === 'viewProduct'
-  );
-}
+/**
+ * Handle add to cart click.
+ * @param {HTMLElement} target the clicked button (has data attributes).
+ */
+function handleAddToCartClick(target) {
+  console.log('add to cart', target.parentNode.getAttribute('data-id'));
 
-function isCloseProductButton(target) {
-  return (
-    typeof target.attributes['js-page'] !== 'undefined' &&
-    target.getAttribute('js-page') === 'closeProduct'
-  );
-}
-
-// Add To Cart
-function addToCart(target) {
   const lineItemsToAdd = [
     {
       variantId: target.parentNode.getAttribute('data-id'),
@@ -93,19 +143,55 @@ function addToCart(target) {
 
   // Add an item to the checkout
   client.checkout.addLineItems(checkoutId, lineItemsToAdd).then((checkout) => {
-    console.log('checkout', checkout.lineItems[0].title);
+    console.log('checkout', checkout.lineItems.length);
   });
 }
 
-// View product
-function viewProduct(target) {
+/**
+ * View a product page.
+ * @param {HTMLElement} target the clicked button (has data attributes).
+ */
+function handleViewProductClick(target) {
   const productHandle = target.parentNode.getAttribute('data-handle');
 
-  client.product.fetchByHandle(productHandle).then((product) => {
-    document.querySelector('[js-page="container"]').innerHTML = productTemplate(product.attrs);
-  });
+  checkProductCache(productHandle);
 }
 
+/**
+ * Check product cache to determine where to load from.
+ * @param {String} handle the product handle to load.
+ */
+function checkProductCache(handle) {
+  const filteredProduct = products.filter((product) => {
+    return (product.handle === handle) ? product : '';
+  })[0];
+
+  if (filteredProduct) {
+    console.log('cached product');
+    renderProductPage(filteredProduct);
+    return;
+  }
+
+  loadProductFromApi(handle);
+}
+
+/**
+ * Render the product page.
+ * @param {Object} product the product to load.
+ */
+function renderProductPage(product) {
+  const url = `?product=${product.handle}`;
+
+  updateHistory(product.title, url);
+
+  document.querySelector('[js-page="container"]').innerHTML = productTemplate(product);
+}
+
+/**
+ * The product template.
+ * @param {Object} product the product to render.
+ * @returns {HTML} the product template.
+ */
 function productTemplate(product) {
   return `
     <div class="product-page" js-page="product">
@@ -113,20 +199,45 @@ function productTemplate(product) {
         <img class="product-page__image" src="${product.images[0].src}" alt="${product.images[0].altText}">
       </div>
 
-      <div class="col" data-id="${product.id}">
+      <div class="col" data-id="${product.variants[0].id}">
         <h1 class="product-page__title">${product.title}</h1>
 
         <div class="product-page__description">${product.descriptionHtml}</div>
 
         <button class="button button--large" js-page="addToCart">Add To Cart</button>
-        <button class="button button--close" js-page="closeProduct">Close</button>
+        <button class="button button--close button--large" js-page="closeProduct">Close</button>
       </div>
     </div>
   `;
 }
 
-function closeProduct() {
-  client.product.fetchAll().then((products) => {
-    renderProducts(products);
+/**
+ * Load product from API.
+ * @param {String} handle the product handle to load.
+ */
+function loadProductFromApi(handle) {
+  console.log('load product');
+
+  client.product.fetchByHandle(handle).then((product) => {
+    renderProductPage(product);
   });
 }
+
+/**
+ * Handle the close product click.
+ */
+function handleCloseProductClick() {
+  renderHomepage();
+
+  updateHistory('Homepage', '/');
+}
+
+/**
+ * Document ready.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  products = JSON.parse(localStorage.getItem('products'));
+
+  checkUrl();
+  addEventListeners();
+});
