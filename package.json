@@ -1,0 +1,20 @@
+{
+  "name": "Heedless",
+  "version": "1.0.0",
+  "author": "",
+  "description": "",
+  "keywords": [],
+  "private": true,
+  "license": "ISC",
+  "dependencies": {
+    "js-cookie": "^2.2.0",
+    "lodash": "^4.17.11",
+    "shopify-buy": "^2.2.4",
+    "webpack": "^4.31.0",
+    "webpack-cli": "^3.3.2"
+  },
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
