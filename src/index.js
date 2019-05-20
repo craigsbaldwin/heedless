@@ -83,15 +83,21 @@ function loadProductsFromApi() {
 function renderProducts(products) {
   const html = products.map((product) => {
     return `
-      <div class="product-card" js-page="productCard" data-id="${product.variants[0].id}" data-handle="${product.handle}">
-        <h2>${product.title}</h2>
-        <button class="button" js-page="addToCart">Add To Cart</button>
-        <button class="button" js-page="viewProduct">View Product</button>
+      <div class="product-card" js-page="productCard">
+        <div class="product-card__image">
+          <img class="product-page__image" src="${product.images[0].src}" alt="${product.images[0].altText}">
+        </div>
+
+        <div class="product-card__footer" data-id="${product.variants[0].id}" data-handle="${product.handle}">
+          <h2>${product.title}</h2>
+          <button class="button" js-page="addToCart">Add To Cart</button>
+          <button class="button button--alt" js-page="viewProduct">View Product</button>
+        </div>
       </div>
     `;
   }).join('');
 
-  document.querySelector('[js-page="container"]').innerHTML = html;
+  document.querySelector('[js-page="homepage"]').innerHTML = html;
 }
 
 // Listen for all click events, filter by needed
@@ -184,7 +190,9 @@ function renderProductPage(product) {
 
   updateHistory(product.title, url);
 
-  document.querySelector('[js-page="container"]').innerHTML = productTemplate(product);
+  document.querySelector('[js-page="productPage"]').innerHTML = productTemplate(product);
+  document.querySelector('[js-page="productPage"]').classList.add('is-active');
+  document.querySelector('[js-page="overlay"]').classList.add('is-active');
 }
 
 /**
@@ -194,19 +202,19 @@ function renderProductPage(product) {
  */
 function productTemplate(product) {
   return `
-    <div class="product-page" js-page="product">
-      <div class="col">
-        <img class="product-page__image" src="${product.images[0].src}" alt="${product.images[0].altText}">
-      </div>
+    <div class="product-page__image-container">
+      <img class="product-page__image" src="${product.images[0].src}" alt="${product.images[0].altText}">
+    </div>
 
-      <div class="col" data-id="${product.variants[0].id}">
-        <h1 class="product-page__title">${product.title}</h1>
+    <div class="product-page__meta" data-id="${product.variants[0].id}">
+      <h1 class="product-page__title">${product.title}</h1>
 
-        <div class="product-page__description">${product.descriptionHtml}</div>
+      <div class="product-page__description">${product.descriptionHtml}</div>
 
-        <button class="button button--large" js-page="addToCart">Add To Cart</button>
-        <button class="button button--close button--large" js-page="closeProduct">Close</button>
-      </div>
+      <strong class="product-page__price">${product.variants[0].price}</strong>
+
+      <button class="button button--large" js-page="addToCart">Add To Cart</button>
+      <button class="button button--large button--alt" js-page="closeProduct">Close</button>
     </div>
   `;
 }
@@ -230,6 +238,8 @@ function handleCloseProductClick() {
   renderHomepage();
 
   updateHistory('Homepage', '/');
+  document.querySelector('[js-page="productPage"]').classList.remove('is-active');
+  document.querySelector('[js-page="overlay"]').classList.remove('is-active');
 }
 
 /**
