@@ -1,6 +1,20 @@
 import Client from 'shopify-buy';
+import Vue from 'vue';
 
+import App from './App.vue';
+import router from './router';
 import {on} from './utils';
+
+import './main.scss';
+
+Vue.config.productionTip = false
+
+new Vue({
+  el: '#app',
+  router,
+  components: { App },
+  template: '<App/>'
+});
 
 /**
  * Headerless Shopify.
@@ -81,6 +95,7 @@ function loadProductsFromApi() {
 }
 
 function renderProducts(products) {
+  console.log('products', products);
   const html = products.map((product) => {
     return `
       <div class="product-card" js-page="productCard">
@@ -246,8 +261,8 @@ function handleCloseProductClick() {
  * Document ready.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  products = JSON.parse(localStorage.getItem('products'));
+  // products = JSON.parse(localStorage.getItem('products'));
 
-  checkUrl();
-  addEventListeners();
+  // checkUrl();
+  // addEventListeners();
 });
