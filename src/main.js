@@ -9,6 +9,11 @@ import './main.scss';
 
 Vue.config.productionTip = false
 
+Vue.component('product-card', {
+  props: ['product'],
+  template: ''
+})
+
 new Vue({
   el: '#app',
   router,
