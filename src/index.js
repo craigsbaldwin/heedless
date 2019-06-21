@@ -94,21 +94,21 @@ function updateHistory(title, url) {
 function requestHomePage() {
   if (products) {
     renderProducts(products);
-
-  } else {
-    graphql().getCollectionProductsByHandle('frontpage', 5)
-      .then((response) => {
-        if (response) {
-          renderProducts(response);
-          products = response;
-          localStorage.setItem('products', JSON.stringify(response));
-          return;
-        }
-
-        throw new Error('Response not found');
-      })
-      .catch((error) => error);
+    return;
   }
+
+  graphql().getCollectionProductsByHandle('frontpage', 5)
+    .then((response) => {
+      if (response) {
+        renderProducts(response);
+        products = response;
+        localStorage.setItem('products', JSON.stringify(response));
+        return;
+      }
+
+      throw new Error('Response not found');
+    })
+    .catch((error) => error);
 }
 
 /**
@@ -151,11 +151,16 @@ function renderProducts(products) {
  * @param {String} handle the product handle to render.
  */
 function requestProductPage(handle) {
+  if (singleProducts && singleProducts.hasOwnProperty(handle)) {
+    renderProduct(singleProducts[handle]);
+    return;
+  }
+
   graphql().getProductByHandle(handle)
     .then((response) => {
       if (response) {
         renderProduct(response);
-        addToLocalStorage('singleProducts', response);
+        storeSingleProduct(response);
         return;
       }
 
@@ -239,30 +244,20 @@ function handleCloseProductClick() {
 /**
  * Add new content to local storage.
  * @param {String} storage the name of the storage.
- * @param {Object} contentToAdd the content to add.
+ * @param {Object} product the content to add.
  */
-function addToLocalStorage(storage, contentToAdd) {
-  const content = JSON.parse(localStorage.getItem(storage));
-  console.log('add', content);
+function storeSingleProduct(product) {
+  const productHandle = product.handle;
+  const content = JSON.parse(localStorage.getItem('singleProducts'));
 
   if (content) {
-    console.log('typeof', typeof content)
-    if (typeof content === 'object') {
-      const updatedContent = [content];
-    } else {
-      const updatedContent = content;
-    }
-
-    updatedContent.push(contentToAdd);
-
-    localStorage.setItem(storage, JSON.stringify(updatedContent));
-    console.log('storage', JSON.parse(localStorage.getItem('singleProducts')));
-
+    singleProducts[productHandle] = product;
+    localStorage.setItem('singleProducts', JSON.stringify(singleProducts));
     return;
   }
 
-  localStorage.setItem(storage, JSON.stringify(contentToAdd))
-  console.log('storage', JSON.parse(localStorage.getItem('singleProducts')));
+  singleProducts[productHandle] = product;
+  localStorage.setItem('singleProducts', JSON.stringify(singleProducts))
 }
 
 /**
@@ -284,3 +279,8 @@ function addToLocalStorage(storage, contentToAdd) {
 //     console.log('checkout', checkout.lineItems.length);
 //   });
 // }
+
+// Make a cart that works
+// Variant selector
+// Collection handle based localStorage
+// Format money
