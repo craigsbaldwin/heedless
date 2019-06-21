@@ -1,144 +1,274 @@
-// import Client from 'shopify-buy';
+import {on, concat} from './utils';
+import graphql from './graphql';
 
-// import {on} from './utils';
+/**
+ * Global variables.
+ */
+let checkoutId = '';
+let products = {};
+let singleProducts = {};
 
-// /**
-//  * Headerless Shopify.
-//  */
-// const client = Client.buildClient({
-//   domain: 'heedless.myshopify.com',
-//   storefrontAccessToken: 'ebc823ca217a89fecdc9cce9f063e902'
-// });
+/**
+ * Handle forward/back browser navigation
+ */
+window.onpopstate = function() {
+  checkUrl();
+}
 
-// /**
-//  * Global variables.
-//  */
-// let checkoutId = '';
-// let products = {};
+/**
+ * Document ready.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  products = JSON.parse(localStorage.getItem('products'));
+  singleProducts = JSON.parse(localStorage.getItem('singleProducts'));
 
-// /**
-//  * Creates empty checkout.
-//  */
-// client.checkout.create().then((checkout) => {
-//   checkoutId = checkout.id;
-// });
+  checkUrl();
+  addEventListeners();
+});
 
-// /**
-//  * Handle forward/back browser navigation
-//  */
-// window.onpopstate = function() {
-//   checkUrl();
-// }
+/**
+ * Check page's URL to load based on that.
+ */
+function checkUrl() {
+  if (location.href === `${location.origin}/`) {
+    requestHomePage();
+    return;
+  }
 
-// /**
-//  * Check page's URL to load based on that.
-//  */
-// function checkUrl() {
-//   if (location.href === `${location.origin}/`) {
-//     renderHomepage();
-//     return;
-//   }
+  if (location.search) {
+    const handle = location.search.replace('?product=', '');
+    requestProductPage(handle);
+  }
+}
 
-//   if (location.search) {
-//     const productHandle = location.search.replace('?product=', '');
-//     checkProductCache(productHandle);
-//     return;
-//   }
-// }
+/**
+ * Listen for all client events, filtered by needed
+ */
+function addEventListeners() {
+  on('click', document.querySelector('body'), (event) => {
+    // if (isCorrectButton(event.target, 'addToCart')) {
+    //   handleAddToCartClick(event.target);
+    //   return;
+    // }
 
-// /**
-//  * Update the history state.
-//  * @param {String} title history title.
-//  * @param {String} url the history url.
-//  */
-// function updateHistory(title, url) {
-//   window.history.pushState({
-//     'html': '',
-//     'pageTitle': title,
-//   }, '', url);
-// }
+    if (isCorrectButton(event.target, 'viewProduct')) {
+      handleViewProductClick(event.target);
+      return;
+    }
 
-// /**
-//  * Render the homepage (all products).
-//  */
-// function renderHomepage() {
-//   if (products) {
-//     console.log('cached products');
-//     renderProducts(products);
-//   } else {
-//     loadProductsFromApi();
-//   }
-// }
+    if (isCorrectButton(event.target, 'closeProduct')) {
+      handleCloseProductClick();
+      return;
+    }
+  });
+}
 
-// function loadProductsFromApi() {
-//   console.log('load products');
+/**
+ * Test for correct button.
+ * @param {HTMLElement} target the clicked item.
+ * @param {String} attribute the desired attribute.
+ * @returns {Boolean} whether it's the correct element.
+ */
+function isCorrectButton(target, attribute) {
+  return (
+    typeof target.attributes['js-page'] !== 'undefined' &&
+    target.getAttribute('js-page') === attribute
+  );
+}
 
-//   client.product.fetchAll().then((products) => {
-//     renderProducts(products);
+/**
+ * Update the history state.
+ * @param {String} title history title.
+ * @param {String} url the history url.
+ */
+function updateHistory(title, url) {
+  window.history.pushState({
+    'html': '',
+    'pageTitle': title,
+  }, '', url);
+}
 
-//     localStorage.setItem('products', JSON.stringify(products));
-//   });
-// }
+/**
+ * Request the homepage (all products).
+ */
+function requestHomePage() {
+  if (products) {
+    renderProducts(products);
 
-// function renderProducts(products) {
-//   console.log('render products', products[0]);
+  } else {
+    graphql().getCollectionProductsByHandle('frontpage', 5)
+      .then((response) => {
+        if (response) {
+          renderProducts(response);
+          products = response;
+          localStorage.setItem('products', JSON.stringify(response));
+          return;
+        }
 
-//   const html = products.map((product) => {
-//     return `
-//       <div class="product-card" js-page="productCard">
-//         <div class="product-card__image">
-//           <img class="product-page__image" src="${product.images[0].src}" alt="${product.images[0].altText}">
-//         </div>
+        throw new Error('Response not found');
+      })
+      .catch((error) => error);
+  }
+}
 
-//         <div class="product-card__footer" data-id="${product.variants[0].id}" data-handle="${product.handle}">
-//           <h2>${product.title}</h2>
-//           <button class="button" js-page="addToCart">Add To Cart</button>
-//           <button class="button button--alt" js-page="viewProduct">View Product</button>
-//         </div>
-//       </div>
-//     `;
-//   }).join('');
+/**
+ * Render collection of products.
+ * @param {Object} products products to render.
+ */
+function renderProducts(products) {
+  const html = products.map((productNode) => {
+    const product = productNode.node;
 
-//   document.querySelector('[js-page="homepage"]').innerHTML = html;
-// }
+    return `
+      <div class="product-card" js-page="productCard">
+        <div class="product-card__image">
+          <img
+            class="product-page__image"
+            alt="${product.images.edges[0].node.altText}"
+            src="${product.images.edges[0].node.transformedSrc}"
+          >
+        </div>
 
-// // Listen for all click events, filter by needed
-// function addEventListeners() {
-//   on('click', document.querySelector('body'), (event) => {
-//     if (isCorrectButton(event.target, 'addToCart')) {
-//       handleAddToCartClick(event.target);
-//       return;
-//     }
+        <div
+          class="product-card__footer"
+          data-handle="${product.handle}"
+          data-id="${product.variants.edges[0].node.id}"
+        >
+          <h2>${product.title}</h2>
 
-//     if (isCorrectButton(event.target, 'viewProduct')) {
-//       handleViewProductClick(event.target);
-//       return;
-//     }
+          <button class="button" js-page="addToCart">Add To Cart</button>
+          <button class="button button--alt" js-page="viewProduct">View Product</button>
+        </div>
+      </div>
+    `;
+  }).join('');
 
-//     if (isCorrectButton(event.target, 'closeProduct')) {
-//       handleCloseProductClick();
-//       return;
-//     }
-//   });
-// }
+  document.querySelector('[js-page="homepage"]').innerHTML = html;
+}
 
-// /**
-//  * Test for correct button.
-//  * @param {HTMLElement} target the clicked item.
-//  * @param {String} attribute the desired attribute.
-//  * @returns {Boolean} whether it's the correct element.
-//  */
-// function isCorrectButton(target, attribute) {
-//   return (
-//     typeof target.attributes['js-page'] !== 'undefined' &&
-//     target.getAttribute('js-page') === attribute
-//   );
-// }
+/**
+ * Request the product page.
+ * @param {String} handle the product handle to render.
+ */
+function requestProductPage(handle) {
+  graphql().getProductByHandle(handle)
+    .then((response) => {
+      if (response) {
+        renderProduct(response);
+        addToLocalStorage('singleProducts', response);
+        return;
+      }
 
-// /**
-//  * Handle add to cart click.
-//  * @param {HTMLElement} target the clicked button (has data attributes).
-//  */
+      throw new Error('Response not found');
+    })
+    .catch((error) => error);
+  return;
+}
+
+/**
+ * Render the product page.
+ * @param {Object} product the product to load.
+ */
+function renderProduct(product) {
+  const url = `?product=${product.handle}`;
+
+  updateHistory(product.title, url);
+
+  document.querySelector('[js-page="productPage"]').innerHTML = productTemplate(product);
+  document.querySelector('[js-page="productPage"]').classList.add('is-active');
+  document.querySelector('[js-page="overlay"]').classList.add('is-active');
+}
+
+/**
+ * The product template.
+ * @param {Object} product the product to render.
+ * @returns {HTML} the product template.
+ */
+function productTemplate(product) {
+  return `
+    <div class="product-page__image-container">
+      <img class="product-page__image"
+        alt="${product.images.edges[0].node.altText}"
+        src="${product.images.edges[0].node.transformedSrc}"
+      >
+    </div>
+
+    <div class="product-page__meta" data-id="${product.variants.edges[0].node.id}">
+      <h1 class="product-page__title">${product.title}</h1>
+
+      <div class="product-page__description">${product.descriptionHtml}</div>
+
+      <strong class="product-page__price">
+        ${product.variants.edges[0].node.priceV2.amount}
+      </strong>
+
+      <button class="button button--large" js-page="addToCart">Add To Cart</button>
+      <button class="button button--large button--alt" js-page="closeProduct">Close</button>
+    </div>
+  `;
+}
+
+/**
+ * Format money into correct format.
+ * @param {String} amount the amount to format.
+ */
+function formatMoney(amount) {
+  return `£`
+}
+
+/**
+ * View a product page.
+ * @param {HTMLElement} target the clicked button (has data attributes).
+ */
+function handleViewProductClick(target) {
+  const handle = target.parentNode.getAttribute('data-handle');
+  requestProductPage(handle);
+}
+
+/**
+ * Handle the close product click.
+ */
+function handleCloseProductClick() {
+  requestHomePage();
+
+  updateHistory('Homepage', '/');
+  document.querySelector('[js-page="productPage"]').classList.remove('is-active');
+  document.querySelector('[js-page="overlay"]').classList.remove('is-active');
+}
+
+/**
+ * Add new content to local storage.
+ * @param {String} storage the name of the storage.
+ * @param {Object} contentToAdd the content to add.
+ */
+function addToLocalStorage(storage, contentToAdd) {
+  const content = JSON.parse(localStorage.getItem(storage));
+  console.log('add', content);
+
+  if (content) {
+    console.log('typeof', typeof content)
+    if (typeof content === 'object') {
+      const updatedContent = [content];
+    } else {
+      const updatedContent = content;
+    }
+
+    updatedContent.push(contentToAdd);
+
+    localStorage.setItem(storage, JSON.stringify(updatedContent));
+    console.log('storage', JSON.parse(localStorage.getItem('singleProducts')));
+
+    return;
+  }
+
+  localStorage.setItem(storage, JSON.stringify(contentToAdd))
+  console.log('storage', JSON.parse(localStorage.getItem('singleProducts')));
+}
+
+/**
+ * Handle add to cart click.
+ * @param {HTMLElement} target the clicked button (has data attributes).
+ */
 // function handleAddToCartClick(target) {
 //   console.log('add to cart', target.parentNode.getAttribute('data-id'));
 
@@ -154,158 +284,3 @@
 //     console.log('checkout', checkout.lineItems.length);
 //   });
 // }
-
-// /**
-//  * View a product page.
-//  * @param {HTMLElement} target the clicked button (has data attributes).
-//  */
-// function handleViewProductClick(target) {
-//   const productHandle = target.parentNode.getAttribute('data-handle');
-
-//   checkProductCache(productHandle);
-// }
-
-// /**
-//  * Check product cache to determine where to load from.
-//  * @param {String} handle the product handle to load.
-//  */
-// function checkProductCache(handle) {
-//   if (!products) {
-//     loadProductFromApi(handle);
-//     return;
-//   }
-
-//   const filteredProduct = products.filter((product) => {
-//     return (product.handle === handle) ? product : '';
-//   })[0];
-
-//   if (filteredProduct) {
-//     console.log('cached product');
-//     renderProductPage(filteredProduct);
-//     return;
-//   }
-
-//   loadProductFromApi(handle);
-// }
-
-// /**
-//  * Render the product page.
-//  * @param {Object} product the product to load.
-//  */
-// function renderProductPage(product) {
-//   const url = `?product=${product.handle}`;
-
-//   updateHistory(product.title, url);
-
-//   document.querySelector('[js-page="productPage"]').innerHTML = productTemplate(product);
-//   document.querySelector('[js-page="productPage"]').classList.add('is-active');
-//   document.querySelector('[js-page="overlay"]').classList.add('is-active');
-// }
-
-// /**
-//  * The product template.
-//  * @param {Object} product the product to render.
-//  * @returns {HTML} the product template.
-//  */
-// function productTemplate(product) {
-//   return `
-//     <div class="product-page__image-container">
-//       <img class="product-page__image" src="${product.images[0].src}" alt="${product.images[0].altText}">
-//     </div>
-
-//     <div class="product-page__meta" data-id="${product.variants[0].id}">
-//       <h1 class="product-page__title">${product.title}</h1>
-
-//       <div class="product-page__description">${product.descriptionHtml}</div>
-
-//       <strong class="product-page__price">${product.variants[0].price}</strong>
-
-//       <button class="button button--large" js-page="addToCart">Add To Cart</button>
-//       <button class="button button--large button--alt" js-page="closeProduct">Close</button>
-//     </div>
-//   `;
-// }
-
-// /**
-//  * Load product from API.
-//  * @param {String} handle the product handle to load.
-//  */
-// function loadProductFromApi(handle) {
-//   console.log('load product');
-
-//   client.product.fetchByHandle(handle).then((product) => {
-//     renderProductPage(product);
-//   });
-// }
-
-// /**
-//  * Handle the close product click.
-//  */
-// function handleCloseProductClick() {
-//   renderHomepage();
-
-//   updateHistory('Homepage', '/');
-//   document.querySelector('[js-page="productPage"]').classList.remove('is-active');
-//   document.querySelector('[js-page="overlay"]').classList.remove('is-active');
-// }
-
-// /**
-//  * Document ready.
-//  */
-// document.addEventListener('DOMContentLoaded', () => {
-//   products = JSON.parse(localStorage.getItem('products'));
-
-//   checkUrl();
-//   addEventListeners();
-// });
-
-import fetch from 'node-fetch';
-
-const shopUrl = 'https://heedless.myshopify.com';
-const accessToken = 'ebc823ca217a89fecdc9cce9f063e902';
-
-const query1 = `query FirstProduct {
-  products(first:1) {
-    edges {
-      node {
-        id
-        title
-        description
-        variants(first:1) {
-          edges {
-            node {
-              title
-              id
-              priceV2 {
-                amount
-                currencyCode
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}`;
-
-const fetchQuery1 = () => {
-  // Define options for first query with no variables and body is string and not a json object
-  const optionsQuery1 = {
-    method: "post",
-    headers: {
-      "Content-Type": "application/graphql",
-      "X-Shopify-Storefront-Access-Token": accessToken
-    },
-    body: query1
-  };
-
-  // Fetch data and remember product id
-  fetch(shopUrl + `/api/graphql`, optionsQuery1)
-    .then(res => res.json())
-    .then(response => {
-      const productId = response.data.products.edges[0].node.id;
-      console.log(productId);
-    });
-}
-
-fetchQuery1();

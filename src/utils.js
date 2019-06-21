@@ -29,3 +29,15 @@ export function on(event, elem = window, callback, capture = false) {
    */
   elem.addEventListener(event, callback, capture);
 }
+
+/**
+ * Concatenate two objects together.
+ * @param {Object} o1 the first object.
+ * @param {Object} o2 the second object.
+ */
+export function concat(o1, o2) {
+  for (var key in o2) {
+    o1[key] = o2[key];
+  }
+  return o1;
+}
