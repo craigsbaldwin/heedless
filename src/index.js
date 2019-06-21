@@ -5,7 +5,7 @@ import graphql from './graphql';
  * Global variables.
  */
 let checkoutId = '';
-let products = {};
+let collectionProducts = {};
 let singleProducts = {};
 
 /**
@@ -19,8 +19,8 @@ window.onpopstate = function() {
  * Document ready.
  */
 document.addEventListener('DOMContentLoaded', () => {
-  products = JSON.parse(localStorage.getItem('products'));
-  singleProducts = JSON.parse(localStorage.getItem('singleProducts'));
+  collectionProducts = JSON.parse(localStorage.getItem('collectionProducts')) || {};
+  singleProducts = JSON.parse(localStorage.getItem('singleProducts')) || {};
 
   checkUrl();
   addEventListeners();
@@ -89,11 +89,20 @@ function updateHistory(title, url) {
 }
 
 /**
- * Request the homepage (all products).
+ * Render the homepage.
  */
 function requestHomePage() {
-  if (products) {
-    renderProducts(products);
+  requestCollection('frontpage');
+}
+
+/**
+ * Request a collection.
+ * @param {String} handle the collection handle.
+ */
+function requestCollection(handle) {
+  if (collectionProducts && collectionProducts.hasOwnProperty(handle)) {
+    console.log('Cached Collection');
+    renderProducts(collectionProducts[handle]);
     return;
   }
 
@@ -101,8 +110,7 @@ function requestHomePage() {
     .then((response) => {
       if (response) {
         renderProducts(response);
-        products = response;
-        localStorage.setItem('products', JSON.stringify(response));
+        storeCollectionProducts(response);
         return;
       }
 
@@ -113,9 +121,11 @@ function requestHomePage() {
 
 /**
  * Render collection of products.
- * @param {Object} products products to render.
+ * @param {Object} collection collection of products to render.
  */
-function renderProducts(products) {
+function renderProducts(collection) {
+  const products = collection.products.edges;
+
   const html = products.map((productNode) => {
     const product = productNode.node;
 
@@ -152,6 +162,7 @@ function renderProducts(products) {
  */
 function requestProductPage(handle) {
   if (singleProducts && singleProducts.hasOwnProperty(handle)) {
+    console.log('Cached Product Page');
     renderProduct(singleProducts[handle]);
     return;
   }
@@ -242,8 +253,7 @@ function handleCloseProductClick() {
 }
 
 /**
- * Add new content to local storage.
- * @param {String} storage the name of the storage.
+ * Add new single product to local storage.
  * @param {Object} product the content to add.
  */
 function storeSingleProduct(product) {
@@ -257,7 +267,26 @@ function storeSingleProduct(product) {
   }
 
   singleProducts[productHandle] = product;
-  localStorage.setItem('singleProducts', JSON.stringify(singleProducts))
+  localStorage.setItem('singleProducts', JSON.stringify(singleProducts));
+}
+
+/**
+ * Add new collection of products to local storage.
+ * @param {Object} collection the collection of products to add.
+ */
+function storeCollectionProducts(collection) {
+  const collectionHandle = collection.handle;
+  const content = JSON.parse(localStorage.getItem('collectionProducts'));
+
+  if (content) {
+    collectionProducts[collectionHandle] = collection;
+    localStorage.setItem('collectionProducts', JSON.stringify(collectionProducts));
+    console.log('collectionProducts', collectionProducts)
+    return;
+  }
+
+  collectionProducts[collectionHandle] = collection;
+  localStorage.setItem('collectionProducts', JSON.stringify(collectionProducts));
 }
 
 /**

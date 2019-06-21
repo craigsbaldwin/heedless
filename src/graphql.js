@@ -23,6 +23,7 @@ export default () => {
     return `
       {
         collectionByHandle(handle: "${handle}") {
+          handle
           products(first: ${limit}) {
             edges {
               node {
@@ -104,8 +105,8 @@ export default () => {
       fetch(`${shopUrl}/api/graphql`, query)
         .then(res => res.json())
         .then(response => {
-          const products = response.data.collectionByHandle.products.edges;
-          resolve(products);
+          const collection = response.data.collectionByHandle;
+          resolve(collection);
         });
     });
   }
