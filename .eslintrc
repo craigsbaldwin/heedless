@@ -23,6 +23,7 @@
     "window": true,
     "Shopify": true,
     "theme": true,
-    "Heedless": true
+    "Heedless": true,
+    "navigator": true,
   }
 }

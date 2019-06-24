@@ -1,4 +1,5 @@
 const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -34,6 +35,13 @@ const config = {
     new MiniCssExtractPlugin({
       filename: 'assets/[name].css',
     }),
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, 'src', 'pwa'),
+        to: path.resolve(__dirname, 'dist', 'assets/pwa'),
+        toType: 'dir',
+      },
+    ])
   ],
 };
 
