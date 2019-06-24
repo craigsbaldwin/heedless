@@ -42,7 +42,7 @@ export default () => {
    * @param {String} handle the collection handle.
    * @param {Number} limit number of products to load.
    */
-  function collectionProductQuery(handle, limit) {
+  function collectionsQuery(handle, limit) {
     return `
       {
         collectionByHandle(handle: "${handle}") {
@@ -55,7 +55,8 @@ export default () => {
                 images(first: 1) {
                   edges {
                     node {
-                      transformedSrc(maxWidth: 300)
+                      smallImage: transformedSrc(maxWidth: 300)
+                      mediumImage: transformedSrc(maxWidth: 600)
                       altText
                     }
                   }
@@ -137,7 +138,7 @@ export default () => {
    * @param {String} handle the collection handle.
    * @param {Number} limit number of products to load.
    */
-  function getCollectionProductsByHandle(handle, limit) {
+  function getCollectionByHandle(handle, limit) {
     return new Promise((resolve, reject) => {
       const query = {
         method: 'post',
@@ -145,7 +146,7 @@ export default () => {
           'Content-Type': 'application/graphql',
           'X-Shopify-Storefront-Access-Token': accessToken
         },
-        body: collectionProductQuery(handle, limit)
+        body: collectionsQuery(handle, limit)
       };
 
       fetch(`${shopUrl}/api/graphql`, query)
@@ -183,7 +184,7 @@ export default () => {
 
   return Object.freeze({
     createCheckout,
-    getCollectionProductsByHandle,
+    getCollectionByHandle,
     getProductByHandle,
   });
 }

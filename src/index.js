@@ -17,6 +17,15 @@ window.Heedless.collections = window.Heedless.collections || {};
 window.Heedless.products = window.Heedless.products || {};
 window.Heedless.cart = cart();
 
+// /**
+//  * Service worker.
+//  */
+// if ('serviceWorker' in navigator) {
+//   window.addEventListener('load', () => {
+//     navigator.serviceWorker.register('/service-worker.js');
+//   });
+// }
+
 /**
  * Document ready.
  */
@@ -27,6 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
   events().addEventListeners();
   templates().requestCollection('frontpage');
 });
+
+// Use dev-server
+// Add file-loader https://thoughtbot.com/blog/setting-up-webpack-for-react-and-hot-module-replacement
+// Generate SSL for dev-server https://gist.github.com/pgilad/63ddb94e0691eebd502deee207ff62bd
 
 // Make a cart that works
 // Variant selector

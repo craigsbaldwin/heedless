@@ -23,7 +23,7 @@ export default () => {
       return;
     }
 
-    graphql().getCollectionProductsByHandle('frontpage', 5)
+    graphql().getCollectionByHandle('frontpage', 5)
       .then((response) => {
         if (response) {
           renderProducts(response);
@@ -52,7 +52,11 @@ export default () => {
           <img
             class="product-page__image"
             alt="${product.images.edges[0].node.altText}"
-            src="${product.images.edges[0].node.transformedSrc}"
+            src="${product.images.edges[0].node.smallImage}"
+            srcset="
+              ${product.images.edges[0].node.smallImage} 300w,
+              ${product.images.edges[0].node.mediumImage} 600w"
+            sizes="auto"
           >
         </div>
 
