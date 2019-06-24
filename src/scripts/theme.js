@@ -4,7 +4,9 @@
  * Homepage demo functionality;
  *
  */
-import cart from './cart.js';
+import '../styles/theme.scss';
+
+import cart from './cart';
 import events from './events';
 import templates from './templates';
 import storage from './storage';

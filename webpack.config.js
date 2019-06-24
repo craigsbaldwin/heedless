@@ -19,28 +19,9 @@ const config = {
     rules: [
       {
         test: /\.scss$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: 'assets/[name].css',
-            }
-          },
-          {
-            loader: 'extract-loader'
-          },
-          {
-            loader: 'css-loader?-url'
-          },
-          {
-            loader: 'postcss-loader'
-          },
-          {
-            loader: 'sass-loader'
-          }
-        ]
-      },
-    ],
+        use: ['style-loader', MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
+      }
+    ]
   },
 
   plugins: [
