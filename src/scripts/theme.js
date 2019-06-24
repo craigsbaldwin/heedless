@@ -24,7 +24,7 @@ window.Heedless.cart = cart();
 //  */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/assets/pwa/service-worker.js');
+    navigator.serviceWorker.register('/assets/service-worker.js');
   });
 }
 
@@ -39,10 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   templates().requestCollection('frontpage');
 });
 
-// Use dev-server
-// Add file-loader https://thoughtbot.com/blog/setting-up-webpack-for-react-and-hot-module-replacement
-// Generate SSL for dev-server https://gist.github.com/pgilad/63ddb94e0691eebd502deee207ff62bd
-
+// Cache images using PWA
 // Make a cart that works
 // Variant selector
 // Collection handle based localStorage

@@ -38,7 +38,7 @@ const config = {
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, 'src', 'pwa'),
-        to: path.resolve(__dirname, 'dist', 'assets/pwa'),
+        to: path.resolve(__dirname, 'dist', 'assets'),
         toType: 'dir',
       },
     ])

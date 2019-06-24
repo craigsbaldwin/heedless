@@ -16,7 +16,11 @@
     "node/shebang": 0,
     "shopify/strict-component-boundaries": 0,
     "spaced-comment": ["error", "always", { "markers": ["/"] }],
-    "func-style": 0
+    "func-style": 0,
+    "no-useless-catch": 0,
+    "no-misleading-character-class": 0,
+    "require-atomic-updates": 0,
+    "prefer-object-spread": 0
   },
   "globals": {
     "document": true,
@@ -25,5 +29,8 @@
     "theme": true,
     "Heedless": true,
     "navigator": true,
+    "workbox": true,
+    "importScripts": true,
+    "console": true
   }
 }
