@@ -3,6 +3,8 @@
  * ------------------------------------------------------------------------------
  * Ways of accessing storefront API data.
  *
+ * @namespace graphql
+ *
  */
 import fetch from 'node-fetch';
 
