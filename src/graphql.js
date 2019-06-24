@@ -17,6 +17,27 @@ const accessToken = 'ebc823ca217a89fecdc9cce9f063e902';
 export default () => {
 
   /**
+   * Create checkout query.
+   */
+  function createCheckoutQuery() {
+    return `
+      mutation {
+        checkoutCreate(input: {}) {
+          checkout {
+            id
+            webUrl
+          }
+          checkoutUserErrors {
+            code
+            field
+            message
+          }
+        }
+      }
+    `;
+  }
+
+  /**
    * Collection and its products query.
    * @param {String} handle the collection handle.
    * @param {Number} limit number of products to load.
@@ -89,6 +110,29 @@ export default () => {
   }
 
   /**
+   * Create checkout instance.
+   */
+  function createCheckout() {
+    return new Promise((resolve, reject) => {
+      const query = {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/graphql',
+          'X-Shopify-Storefront-Access-Token': accessToken
+        },
+        body: createCheckoutQuery()
+      };
+
+      fetch(`${shopUrl}/api/graphql`, query)
+        .then(res => res.json())
+        .then(response => {
+          const checkout = response.data.checkoutCreate.checkout;
+          resolve(checkout);
+        });
+    });
+  }
+
+  /**
    * Get products from a collection by handle.
    * @param {String} handle the collection handle.
    * @param {Number} limit number of products to load.
@@ -138,6 +182,7 @@ export default () => {
   }
 
   return Object.freeze({
+    createCheckout,
     getCollectionProductsByHandle,
     getProductByHandle,
   });

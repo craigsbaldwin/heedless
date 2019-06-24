@@ -8,6 +8,20 @@
   </head>
 
   <body>
+    <div class="header">
+      <button class="header__cart-counter">
+          Cart (<span js-cart="counter">0</span>)
+      </button>
+
+      <a
+        class="header__checkout"
+        href="/"
+        js-checkout="link"
+      >
+        Go to checkout
+      </a>
+    </div>
+
     <div class="container">
       <div class="homepage" js-page="homepage"></div>
       <div class="product-page" js-page="productPage"></div>

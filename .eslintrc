@@ -1,0 +1,28 @@
+{
+  "extends": [
+    "plugin:shopify/esnext"
+  ],
+  "env": {
+    "jest": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "babel/no-invalid-this": 0,
+    "import/no-anonymous-default-export": 0,
+    "import/no-unresolved": ["error"],
+    "import/namespace": ["error", { "allowComputed": true }],
+    "no-alert": 0,
+    "no-new": 0,
+    "node/shebang": 0,
+    "shopify/strict-component-boundaries": 0,
+    "spaced-comment": ["error", "always", { "markers": ["/"] }],
+    "func-style": 0
+  },
+  "globals": {
+    "document": true,
+    "window": true,
+    "Shopify": true,
+    "theme": true,
+    "Heedless": true
+  }
+}
