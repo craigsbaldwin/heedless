@@ -1,3 +1,5 @@
+// Configured using https://github.com/fransyrcc/starter-html-sass-js-webpack/blob/master/webpack.config.js
+
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -39,6 +41,13 @@ const config = {
       {
         from: path.resolve(__dirname, 'src', 'pwa'),
         to: path.resolve(__dirname, 'dist', 'assets'),
+        toType: 'dir',
+      },
+    ]),
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, 'src', 'images'),
+        to: path.resolve(__dirname, 'dist', 'assets/images'),
         toType: 'dir',
       },
     ])
