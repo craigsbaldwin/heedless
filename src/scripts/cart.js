@@ -15,7 +15,7 @@ import graphql from './graphql';
  */
 const selectors = {
   checkoutLink: '[js-checkout="link"]',
-}
+};
 
 export default () => {
 
@@ -24,7 +24,7 @@ export default () => {
    */
   const nodeSelectors = {
     checkoutLink: document.querySelector(selectors.checkoutLink),
-  }
+  };
 
   /**
    * Init the cart.
@@ -46,10 +46,21 @@ export default () => {
   /**
    * Add to cart.
    * No update checkout so have to store current items and re-set checkout.
-   * @param {Object} lineItem line item object to add `{id, quantity}`.
+   * @param {Object} lineItem line item object to add `{id: [id], quantity: [quantity]}`.
    */
   function addToCart(lineItem) {
+    console.log('lineItem', lineItem);
 
+    graphql().updateCheckout()
+      .then((response) => {
+        if (response) {
+          console.log('response', response);
+          return;
+        }
+
+        throw new Error('Response not found');
+      })
+      .catch((error) => error);
   }
 
   /**
@@ -62,5 +73,6 @@ export default () => {
 
   return Object.freeze({
     init,
-  })
-}
+    addToCart,
+  });
+};

@@ -6,7 +6,6 @@
  * @namespace events
  *
  */
-import templates from './templates';
 import {on} from './utils';
 
 export default () => {
@@ -16,20 +15,20 @@ export default () => {
    */
   window.onpopstate = function() {
     checkUrl();
-  }
+  };
 
   /**
    * Check page's URL to load based on that.
    */
   function checkUrl() {
     if (location.href === `${location.origin}/`) {
-      templates().requestCollection('frontpage');
+      Heedless.templates.requestCollection('frontpage');
       return;
     }
 
     if (location.search) {
       const handle = location.search.replace('?product=', '');
-      templates().requestProductPage(handle);
+      Heedless.templates.requestProductPage(handle);
     }
   }
 
@@ -38,10 +37,10 @@ export default () => {
    */
   function addEventListeners() {
     on('click', document.querySelector('body'), (event) => {
-      // if (isCorrectButton(event.target, 'addToCart')) {
-      //   handleAddToCartClick(event.target);
-      //   return;
-      // }
+      if (isCorrectButton(event.target, 'addToCart')) {
+        handleAddToCartClick(event.target);
+        return;
+      }
 
       if (isCorrectButton(event.target, 'viewProduct')) {
         handleViewProductClick(event.target);
@@ -50,7 +49,6 @@ export default () => {
 
       if (isCorrectButton(event.target, 'closeProduct')) {
         handleCloseProductClick();
-        return;
       }
     });
   }
@@ -75,9 +73,23 @@ export default () => {
    */
   function updateHistory(title, url) {
     window.history.pushState({
-      'html': '',
-      'pageTitle': title,
+      html: '',
+      pageTitle: title,
     }, '', url);
+  }
+
+  /**
+   * Add product to cart.
+   * @param {HTMLElement} target the clicked button (has data attributes).
+   */
+  function handleAddToCartClick(target) {
+    const variantId = target.getAttribute('data-id');
+    const lineItem = {
+      id: variantId,
+      quantity: 1,
+    };
+
+    Heedless.cart.addToCart(lineItem);
   }
 
   /**
@@ -85,15 +97,15 @@ export default () => {
    * @param {HTMLElement} target the clicked button (has data attributes).
    */
   function handleViewProductClick(target) {
-    const handle = target.parentNode.getAttribute('data-handle');
-    templates().requestProductPage(handle);
+    const handle = target.getAttribute('data-handle');
+    Heedless.templates.requestProductPage(handle);
   }
 
   /**
    * Handle the close product click.
    */
   function handleCloseProductClick() {
-    templates().requestCollection('frontpage');
+    Heedless.templates.requestCollection('frontpage');
 
     updateHistory('Homepage', '/');
     document.querySelector('[js-page="productPage"]').classList.remove('is-active');
@@ -104,5 +116,5 @@ export default () => {
     checkUrl,
     addEventListeners,
     updateHistory,
-  })
-}
+  });
+};

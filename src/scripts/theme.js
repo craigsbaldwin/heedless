@@ -18,6 +18,8 @@ window.Heedless = window.Heedless || {};
 window.Heedless.collections = window.Heedless.collections || {};
 window.Heedless.products = window.Heedless.products || {};
 window.Heedless.cart = cart();
+window.Heedless.events = events();
+window.Heedless.templates = templates();
 
 // /**
 //  * Service worker.

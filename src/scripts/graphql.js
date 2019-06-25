@@ -114,21 +114,24 @@ export default () => {
    * Create checkout instance.
    */
   function createCheckout() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const query = {
         method: 'post',
         headers: {
           'Content-Type': 'application/graphql',
-          'X-Shopify-Storefront-Access-Token': accessToken
+          'X-Shopify-Storefront-Access-Token': accessToken,
         },
-        body: createCheckoutQuery()
+        body: createCheckoutQuery(),
       };
 
       fetch(`${shopUrl}/api/graphql`, query)
-        .then(res => res.json())
-        .then(response => {
+        .then((response) => response.json())
+        .then((response) => {
           const checkout = response.data.checkoutCreate.checkout;
           resolve(checkout);
+        })
+        .catch((error) => {
+          return error;
         });
     });
   }
@@ -139,21 +142,24 @@ export default () => {
    * @param {Number} limit number of products to load.
    */
   function getCollectionByHandle(handle, limit) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const query = {
         method: 'post',
         headers: {
           'Content-Type': 'application/graphql',
-          'X-Shopify-Storefront-Access-Token': accessToken
+          'X-Shopify-Storefront-Access-Token': accessToken,
         },
-        body: collectionsQuery(handle, limit)
+        body: collectionsQuery(handle, limit),
       };
 
       fetch(`${shopUrl}/api/graphql`, query)
-        .then(res => res.json())
-        .then(response => {
+        .then((response) => response.json())
+        .then((response) => {
           const collection = response.data.collectionByHandle;
           resolve(collection);
+        })
+        .catch((error) => {
+          return error;
         });
     });
   }
@@ -163,21 +169,24 @@ export default () => {
    * @param {String} handle the product handle.
    */
   function getProductByHandle(handle) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const query = {
         method: 'post',
         headers: {
           'Content-Type': 'application/graphql',
-          'X-Shopify-Storefront-Access-Token': accessToken
+          'X-Shopify-Storefront-Access-Token': accessToken,
         },
-        body: productQuery(handle)
+        body: productQuery(handle),
       };
 
       fetch(`${shopUrl}/api/graphql`, query)
-        .then(res => res.json())
-        .then(response => {
+        .then((response) => response.json())
+        .then((response) => {
           const products = response.data.productByHandle;
           resolve(products);
+        })
+        .catch((error) => {
+          return error;
         });
     });
   }
