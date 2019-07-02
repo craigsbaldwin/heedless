@@ -8,7 +8,23 @@
  */
 import {on} from './utils';
 
+/**
+ * DOM selectors.
+ */
+const selectors = {
+  cartCounter: '[js-cart="counter"]',
+  cartDrawer: '[js-cart="drawer"]',
+};
+
 export default () => {
+
+  /**
+   * DOM node selectors.
+   */
+  const nodeSelectors = {
+    cartCounter: [...document.querySelectorAll(selectors.cartCounter)],
+    cartDrawer: document.querySelector(selectors.cartDrawer),
+  };
 
   /**
    * Handle forward/back browser navigation.
@@ -36,6 +52,8 @@ export default () => {
    * Listen for all client events, filtered by needed
    */
   function addEventListeners() {
+    Heedless.eventBus.listen('Cart:updated', (response) => updateCounter(response));
+
     on('click', document.querySelector('body'), (event) => {
       if (isCorrectButton(event.target, 'addToCart')) {
         handleAddToCartClick(event.target);
@@ -49,6 +67,10 @@ export default () => {
 
       if (isCorrectButton(event.target, 'closeProduct')) {
         handleCloseProductClick();
+      }
+
+      if (isCorrectButton(event.target, 'toggleCartDrawer')) {
+        handleToggleCartDrawerClick();
       }
     });
   }
@@ -110,6 +132,23 @@ export default () => {
     updateHistory('Homepage', '/');
     document.querySelector('[js-page="productPage"]').classList.remove('is-active');
     document.querySelector('[js-page="overlay"]').classList.remove('is-active');
+  }
+
+  /**
+   * View a product page.
+   */
+  function handleToggleCartDrawerClick() {
+    nodeSelectors.cartDrawer.classList.add('is-active');
+  }
+
+  /**
+   * Update cart counter.
+   * @param {Object} cart the cart object.
+   */
+  function updateCounter(cart) {
+    nodeSelectors.cartCounter.forEach((element) => {
+      element.innerText = cart.totalCount;
+    });
   }
 
   return Object.freeze({

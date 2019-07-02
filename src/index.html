@@ -15,7 +15,7 @@
 
   <body>
     <div class="header">
-      <button class="header__cart-counter">
+      <button class="header__cart-counter" js-page="toggleCartDrawer">
           Cart (<span js-cart="counter">0</span>)
       </button>
 
@@ -27,6 +27,8 @@
         Go to checkout
       </a>
     </div>
+
+    <div class="cart-drawer" js-cart="drawer"></div>
 
     <div class="container">
       <div class="homepage" js-page="homepage"></div>

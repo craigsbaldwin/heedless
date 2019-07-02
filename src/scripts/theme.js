@@ -6,6 +6,7 @@
  */
 import '../styles/theme.scss';
 
+import eventBus from './event-bus';
 import cart from './cart';
 import events from './events';
 import templates from './templates';
@@ -15,6 +16,7 @@ import storage from './storage';
 * Global Heedless utils
 */
 window.Heedless = window.Heedless || {};
+window.Heedless.eventBus = eventBus();
 window.Heedless.collections = window.Heedless.collections || {};
 window.Heedless.products = window.Heedless.products || {};
 window.Heedless.cart = cart();

@@ -15,6 +15,7 @@ import graphql from './graphql';
  */
 const selectors = {
   checkoutLink: '[js-checkout="link"]',
+  cartCounter: '[js-cart="counter"]',
 };
 
 export default () => {
@@ -24,23 +25,44 @@ export default () => {
    */
   const nodeSelectors = {
     checkoutLink: document.querySelector(selectors.checkoutLink),
+    cartCounter: [...document.querySelectorAll(selectors.cartCounter)],
   };
 
   /**
    * Init the cart.
    */
   function init() {
-    graphql().createCheckout()
-      .then((response) => {
-        if (response) {
-          Cookies.set('cart', response.id);
-          setCheckoutLink(response.webUrl);
-          return;
-        }
+    createCart();
+    setCartCounter();
+  }
 
-        throw new Error('Response not found');
-      })
-      .catch((error) => error);
+  /**
+   * Create cart if it doesn't already exist.
+   */
+  function createCart() {
+    const cart = Cookies.get('cart');
+
+    const defaultCart = {
+      totalCount: 0,
+      items: [],
+    };
+
+    if (!cart) {
+      Cookies.set('cart', defaultCart);
+    }
+  }
+
+  /**
+   * Set the cart counter.
+   */
+  function setCartCounter() {
+    const cart = JSON.parse(Cookies.get('cart'));
+
+    if (cart.totalCount) {
+      nodeSelectors.cartCounter.forEach((element) => {
+        element.innerText = cart.totalCount;
+      });
+    }
   }
 
   /**
@@ -49,18 +71,28 @@ export default () => {
    * @param {Object} lineItem line item object to add `{id: [id], quantity: [quantity]}`.
    */
   function addToCart(lineItem) {
-    console.log('lineItem', lineItem);
+    const cart = JSON.parse(Cookies.get('cart'));
 
-    graphql().updateCheckout()
-      .then((response) => {
-        if (response) {
-          console.log('response', response);
-          return;
-        }
+    let alreadyInCart = false;
 
-        throw new Error('Response not found');
-      })
-      .catch((error) => error);
+    cart.items.forEach((item) => {
+      if (item.id !== lineItem.id) {
+        return;
+      }
+
+      item.quantity += lineItem.quantity;
+      alreadyInCart = true;
+    });
+
+    if (!alreadyInCart) {
+      cart.items.push(lineItem);
+    }
+
+    cart.totalCount += lineItem.quantity;
+
+    Heedless.eventBus.emit('Cart:updated', cart);
+
+    Cookies.set('cart', cart);
   }
 
   /**
