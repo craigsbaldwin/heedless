@@ -1,0 +1,29 @@
+.cart-drawer {
+  align-content: space-between;
+  background-color: $COLOR_WHITE;
+  box-shadow: 0 0 10px rgba($COLOR_CONCRETE, 0.5);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transform: translateX(100%);
+  transition: transform 0.4s ease;
+  width: 400px;
+  z-index: 5;
+
+  &__container {
+    flex: 1 1 auto;
+    padding: 20px;
+  }
+
+  &__footer {
+    flex: 0 0 auto;
+    padding: 20px;
+  }
+
+  &.is-active {
+    transform: translateX(0);
+  }
+}

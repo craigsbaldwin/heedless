@@ -8,7 +8,21 @@
  */
 import {on} from './utils';
 
+/**
+ * DOM selectors.
+ */
+const selectors = {
+  overlay: '[js-page="overlay"]',
+};
+
 export default () => {
+
+  /**
+   * DOM node selectors.
+   */
+  const nodeSelectors = {
+    overlay: document.querySelector(selectors.overlay),
+  };
 
   /**
    * Handle forward/back browser navigation.
@@ -18,43 +32,55 @@ export default () => {
   };
 
   /**
+   * Init the events.
+   */
+  function init() {
+    checkUrl();
+    setEventListeners();
+  }
+
+  /**
    * Check page's URL to load based on that.
    */
   function checkUrl() {
     if (location.href === `${location.origin}/`) {
-      Heedless.templates.requestCollection('frontpage');
+      Heedless.collection.requestCollection('frontpage');
       return;
     }
 
     if (location.search) {
       const handle = location.search.replace('?product=', '');
-      Heedless.templates.requestProductPage(handle);
+      Heedless.product.requestProductPage(handle);
     }
   }
 
   /**
    * Listen for all client events, filtered by needed.
    */
-  function addEventListeners() {
+  function setEventListeners() {
     on('click', document.querySelector('body'), (event) => {
       if (isCorrectButton(event.target, 'addToCart')) {
         handleAddToCartClick(event.target);
-        return;
       }
 
       if (isCorrectButton(event.target, 'viewProduct')) {
-        handleViewProductClick(event.target);
-        return;
+        Heedless.eventBus.emit('Product:open', event.target);
       }
 
       if (isCorrectButton(event.target, 'closeProduct')) {
-        handleCloseProductClick();
+        Heedless.eventBus.emit('Product:close');
       }
 
       if (isCorrectButton(event.target, 'toggleCartDrawer')) {
         Heedless.eventBus.emit('Cart:openDrawer');
       }
+
+      if (isCorrectButton(event.target, 'overlay')) {
+        Heedless.eventBus.emit('Overlay:close');
+      }
     });
+
+    Heedless.eventBus.listen('Overlay:close', () => closeOverlay());
   }
 
   /**
@@ -93,32 +119,18 @@ export default () => {
       quantity: 1,
     };
 
-    Heedless.cart.addToCart(lineItem);
+    Heedless.eventBus.emit('Cart:addToCart', lineItem);
   }
 
   /**
-   * View a product page.
-   * @param {HTMLElement} target the clicked button (has data attributes).
+   * Close the overlay.
    */
-  function handleViewProductClick(target) {
-    const handle = target.getAttribute('data-handle');
-    Heedless.templates.requestProductPage(handle);
-  }
-
-  /**
-   * Handle the close product click.
-   */
-  function handleCloseProductClick() {
-    Heedless.templates.requestCollection('frontpage');
-
-    updateHistory('Homepage', '/');
-    document.querySelector('[js-page="productPage"]').classList.remove('is-active');
-    document.querySelector('[js-page="overlay"]').classList.remove('is-active');
+  function closeOverlay() {
+    nodeSelectors.overlay.classList.remove('is-active');
   }
 
   return Object.freeze({
-    checkUrl,
-    addEventListeners,
+    init,
     updateHistory,
   });
 };

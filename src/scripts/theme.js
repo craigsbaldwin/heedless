@@ -6,12 +6,16 @@
  */
 import '../styles/theme.scss';
 
-import eventBus from './event-bus';
-import cart from './cart';
-import cartDrawer from './cart-drawer';
-import events from './events';
-import templates from './templates';
-import storage from './storage';
+import collection from './templates/collection';
+import product from './templates/product';
+
+import cart from './components/cart';
+import cartDrawer from './components/cart-drawer';
+
+import eventBus from './helpers/event-bus';
+import events from './helpers/events';
+
+import storage from './helpers/storage';
 
 /**
 * Global Heedless utils
@@ -22,7 +26,8 @@ window.Heedless.collections = window.Heedless.collections || {};
 window.Heedless.products = window.Heedless.products || {};
 window.Heedless.cart = cart();
 window.Heedless.events = events();
-window.Heedless.templates = templates();
+window.Heedless.collection = collection();
+window.Heedless.product = product();
 
 // /**
 //  * Service worker.
@@ -39,10 +44,10 @@ if ('serviceWorker' in navigator) {
 document.addEventListener('DOMContentLoaded', () => {
   cart().init();
   cartDrawer().init();
+  product().init();
   storage().init();
-  events().checkUrl();
-  events().addEventListeners();
-  templates().requestCollection('frontpage');
+  events().init();
+  collection().requestCollection('frontpage');
 });
 
 // Cache images using PWA

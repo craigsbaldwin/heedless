@@ -15,22 +15,35 @@
 
   <body>
     <div class="header">
-      <button class="header__cart-counter" js-page="toggleCartDrawer">
-          Cart (<span js-cart="counter">0</span>)
-      </button>
+      <div class="header__container site-width">
+        <div class="header__logo">
+          Heedless
+        </div>
 
-      <a
-        class="header__checkout"
-        href="/"
-        js-checkout="link"
-      >
-        Go to checkout
-      </a>
+        <div class="header__meta">
+          <button class="header__cart-counter button" js-page="toggleCartDrawer">
+            Cart (<span js-cart="counter">0</span>)
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div class="cart-drawer" js-cart="drawer"></div>
+    <div class="cart-drawer" js-cart="drawer">
+      <div class="cart-drawer__container">
+      </div>
 
-    <div class="container">
+      <div class="cart-drawer__footer">
+        <a
+          class="header__checkout button button--large button--wide"
+          href="/"
+          js-checkout="link"
+        >
+          Go to checkout
+        </a>
+      </div>
+    </div>
+
+    <div class="site-width container">
       <div class="homepage" js-page="homepage"></div>
       <div class="product-page" js-page="productPage"></div>
       <div class="overlay" js-page="overlay"></div>

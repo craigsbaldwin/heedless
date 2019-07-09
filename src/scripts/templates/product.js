@@ -1,92 +1,64 @@
 /**
- * Templates
+ * Product page
  * ------------------------------------------------------------------------------
- * Rendering of the page.
+ * Product page template
  *
- * @namespace templates
+ * @namespace product
  *
  */
-import storage from './storage';
-import graphql from './graphql';
+
+import graphql from '../helpers/graphql';
+import storage from '../helpers/storage';
+
+/**
+ * DOM selectors.
+ */
+const selectors = {
+  overlay: '[js-page="overlay"]',
+};
 
 export default () => {
 
   /**
-   * Request a collection.
-   * @param {String} handle the collection handle.
+   * DOM node selectors.
    */
-  function requestCollection(handle) {
-    if (Heedless.collections && Heedless.collections.hasOwnProperty(handle)) {
-      window.console.log('Cached Collection');
-      renderProducts(Heedless.collections[handle]);
-      return;
-    }
+  const nodeSelectors = {
+    overlay: document.querySelector(selectors.overlay),
+  };
 
-    graphql().getCollectionByHandle('frontpage', 5)
-      .then((response) => {
-        if (response) {
-          renderProducts(response);
-          storage().storeCollections(response);
-          return;
-        }
-
-        throw new Error('Response not found');
-      })
-      .catch((error) => error);
+  /**
+   * Init the product page.
+   */
+  function init() {
+    setEventListeners();
   }
 
   /**
-   * Render collection of products.
-   * @param {Object} collection collection of products to render.
+   * Listen for all client events, filtered by needed.
    */
-  function renderProducts(collection) {
-    const products = collection.products.edges;
+  function setEventListeners() {
+    Heedless.eventBus.listen('Product:open', (response) => openProductPage(response));
+    Heedless.eventBus.listen('Product:close', () => closeProductPage());
+  }
 
-    const html = products.map((productNode) => {
-      const product = productNode.node;
+  /**
+   * Open a product page.
+   * @param {HTMLElement} target the clicked button (has data attributes).
+   */
+  function openProductPage(target) {
+    const handle = target.getAttribute('data-handle');
+    requestProductPage(handle);
+  }
 
-      return `
-      <div class="product-card" js-page="productCard">
-        <div class="product-card__image">
-          <img
-            class="product-page__image"
-            alt="${product.images.edges[0].node.altText}"
-            src="${product.images.edges[0].node.smallImage}"
-            srcset="
-              ${product.images.edges[0].node.smallImage} 300w,
-              ${product.images.edges[0].node.mediumImage} 600w"
-            sizes="auto"
-          >
-        </div>
+  /**
+   * Close the product page.
+   */
+  function closeProductPage() {
+    Heedless.collection.requestCollection('frontpage');
+    Heedless.events.updateHistory('Homepage', '/');
 
-        <div
-          class="product-card__footer"
-
-
-        >
-          <h2>${product.title}</h2>
-
-          <button
-            class="button"
-            data-id="${product.variants.edges[0].node.id}"
-            js-page="addToCart"
-          >
-            Add To Cart
-          </button>
-
-          <button
-            class="button button--alt"
-            data-handle="${product.handle}"
-            js-page="viewProduct"
-          >
-            View Product
-          </button>
-        </div>
-      </div>
-    `;
-    }).join('');
-
-    document.querySelector('[js-page="homepage"]').innerHTML = html;
+    document.querySelector('[js-page="productPage"]').classList.remove('is-active');
+    nodeSelectors.overlay.classList.remove('is-active');
   }
 
   /**
@@ -172,7 +144,7 @@ export default () => {
   }
 
   return Object.freeze({
-    requestCollection,
+    init,
     requestProductPage,
   });
 };

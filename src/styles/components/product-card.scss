@@ -1,0 +1,9 @@
+.product-card {
+  box-shadow: $BOX_SHADOW;
+
+  &__footer {
+    border: 1px solid $COLOR_GREY;
+    border-top: 0;
+    padding: 20px;
+  }
+}

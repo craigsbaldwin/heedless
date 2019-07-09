@@ -8,7 +8,7 @@
  */
 import Cookies from 'js-cookie';
 
-import graphql from './graphql';
+import graphql from '../helpers/graphql';
 
 /**
  * DOM selectors.
@@ -43,6 +43,7 @@ export default () => {
    * Set listeners.
    */
   function setEventListeners() {
+    Heedless.eventBus.listen('Cart:addToCart', (response) => addToCart(response));
     Heedless.eventBus.listen('Cart:created', (response) => setCheckoutLink(response));
     Heedless.eventBus.listen('Cart:updated', (response) => handleCartUpdate(response));
   }

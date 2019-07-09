@@ -1,0 +1,42 @@
+.product-page {
+  background-color: $COLOR_WHITE;
+  border: 1px solid $COLOR_GREY;
+  box-shadow: $BOX_SHADOW;
+  display: none;
+  grid-column: span 4;
+  left: 0;
+  position: absolute;
+  top: 40px;
+  width: 100%;
+  z-index: 3;
+
+  &__image-container {
+    flex: 1 1 50%;
+    margin-bottom: -4px;
+    width: 50%;
+  }
+
+  &__image {
+    max-width: 100%;
+  }
+
+  &__meta {
+    flex: 1 1 50%;
+    max-width: 400px;
+    padding: 30px;
+    width: 50%;
+  }
+
+  &__price {
+    display: block;
+    margin-bottom: 40px;
+  }
+
+  &__description {
+    margin-bottom: 20px;
+  }
+
+  &.is-active {
+    display: flex;
+  }
+}

@@ -1,0 +1,20 @@
+.header {
+  box-shadow: $BOX_SHADOW;
+  padding: 20px 0;
+  width: 100%;
+
+  &__container {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__logo {
+    font-size: 18px;
+  }
+
+  &__meta {
+    align-items: center;
+    display: flex;
+  }
+}

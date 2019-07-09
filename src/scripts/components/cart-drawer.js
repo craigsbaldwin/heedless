@@ -12,6 +12,7 @@
  */
 const selectors = {
   cartDrawer: '[js-cart="drawer"]',
+  overlay: '[js-page="overlay"]',
 };
 
 export default () => {
@@ -21,6 +22,7 @@ export default () => {
    */
   const nodeSelectors = {
     cartDrawer: document.querySelector(selectors.cartDrawer),
+    overlay: document.querySelector(selectors.overlay),
   };
 
   /**
@@ -36,6 +38,7 @@ export default () => {
   function setEventListeners() {
     Heedless.eventBus.listen('Cart:updated', () => renderDrawer());
     Heedless.eventBus.listen('Cart:openDrawer', () => openDrawer());
+    Heedless.eventBus.listen(['Cart:closeDrawer', 'Overlay:close'], () => closeDrawer());
   }
 
   /**
@@ -43,6 +46,15 @@ export default () => {
    */
   function openDrawer() {
     nodeSelectors.cartDrawer.classList.add('is-active');
+    nodeSelectors.overlay.classList.add('is-active');
+  }
+
+  /**
+   * Close the cart drawer.
+   */
+  function closeDrawer() {
+    nodeSelectors.cartDrawer.classList.remove('is-active');
+    nodeSelectors.overlay.classList.remove('is-active');
   }
 
   /**

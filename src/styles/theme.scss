@@ -1,162 +1,19 @@
-$COLOR_GREEN: #1abc9c;
-$COLOR_GREEN_DARK: #16a085;
-$COLOR_CONCRETE: #34495e;
-$COLOR_CONCRETE_DARK: #2c3e50;
+/**
+ * Theme stylesheet
+ * ------------------------------------------------------------------------------
+ * Main stylesheet file.
+ *
+ */
 
-$COLOR_WHITE: #fff;
-$COLOR_GREY: #ebebeb;
+@import './base/variables';
+@import './base/reset';
+@import './base/typography';
 
-$BOX_SHADOW: 0 0 15px rgba($COLOR_CONCRETE, 0.1);
+@import './templates/all';
+@import './templates/homepage';
+@import './templates/product';
 
-* {
-  box-sizing: content-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background-color: $COLOR_WHITE;
-  font-family: 'Helvetica', Arial, Helvetica, sans-serif;
-}
-
-h1 {
-  font-size: 18px;
-  margin: 0 0 20px;
-}
-
-h2 {
-  font-size: 14px;
-  margin: 0 0 20px;
-}
-
-.container {
-  margin: 0 auto;
-  max-width: 1200px;
-  padding: 40px 0;
-  position: relative;
-  width: 90%;
-}
-
-.button {
-  background-color: $COLOR_GREEN;
-  border: 0;
-  color: #fff;
-  cursor: pointer;
-  margin-bottom: 10px;
-  padding: 10px 15px;
-
-  &#{&}--large {
-    font-size: 14px;
-    padding: 15px 30px;
-    min-width: 150px;
-  }
-
-  &:hover {
-    background-color: $COLOR_GREEN_DARK;
-  }
-
-  &#{&}--alt {
-    background-color: $COLOR_CONCRETE;
-
-    &:hover {
-      background-color: $COLOR_CONCRETE_DARK;
-    }
-  }
-}
-
-.homepage {
-  display: grid;
-  grid-column-gap: 30px;
-  grid-row-gap: 30px;
-  grid-template-columns: repeat(2, 1fr);
-  z-index: 1;
-
-  @media screen and (min-width: 900px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.product-card {
-  box-shadow: $BOX_SHADOW;
-
-  &__footer {
-    border: 1px solid $COLOR_GREY;
-    border-top: 0;
-    padding: 20px;
-  }
-}
-
-.product-page {
-  background-color: $COLOR_WHITE;
-  border: 1px solid $COLOR_GREY;
-  box-shadow: $BOX_SHADOW;
-  display: none;
-  grid-column: span 4;
-  left: 0;
-  position: absolute;
-  top: 40px;
-  width: 100%;
-  z-index: 3;
-
-  &__image-container {
-    flex: 1 1 50%;
-    margin-bottom: -4px;
-    width: 50%;
-  }
-
-  &__image {
-    max-width: 100%;
-  }
-
-  &__meta {
-    flex: 1 1 50%;
-    max-width: 400px;
-    padding: 30px;
-    width: 50%;
-  }
-
-  &__price {
-    display: block;
-    margin-bottom: 40px;
-  }
-
-  &__description {
-    margin-bottom: 20px;
-  }
-
-  &.is-active {
-    display: flex;
-  }
-}
-
-.overlay {
-  background-color: rgba($COLOR_WHITE, 0.85);
-  display: none;
-  height: 100%;
-  left: 0;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 2;
-
-  &.is-active {
-    display: block;
-  }
-}
-
-.cart-drawer {
-  background-color: $COLOR_WHITE;
-  box-shadow: 0 0 10px rgba($COLOR_CONCRETE, 0.5);
-  height: 100%;
-  position: fixed;
-  right: 0;
-  top: 0;
-  transform: translateX(100%);
-  transition: transform 0.4s ease;
-  width: 400px;
-  z-index: 5;
-
-  &.is-active {
-    transform: translateX(0);
-  }
-}
+@import './components/button';
+@import './components/cart-drawer';
+@import './components/header';
+@import './components/product-card';
