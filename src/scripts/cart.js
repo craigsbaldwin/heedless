@@ -16,6 +16,7 @@ import graphql from './graphql';
 const selectors = {
   checkoutLink: '[js-checkout="link"]',
   cartCounter: '[js-cart="counter"]',
+  cartDrawer: '[js-cart="drawer"]',
 };
 
 export default () => {
@@ -26,15 +27,24 @@ export default () => {
   const nodeSelectors = {
     checkoutLink: document.querySelector(selectors.checkoutLink),
     cartCounter: [...document.querySelectorAll(selectors.cartCounter)],
+    cartDrawer: document.querySelector(selectors.cartDrawer),
   };
 
   /**
    * Init the cart.
    */
   function init() {
-    createCart();
     setEventListeners();
+    createCart();
     setCartCounter();
+  }
+
+  /**
+   * Set listeners.
+   */
+  function setEventListeners() {
+    Heedless.eventBus.listen('Cart:created', (response) => setCheckoutLink(response));
+    Heedless.eventBus.listen('Cart:updated', (response) => handleCartUpdate(response));
   }
 
   /**
@@ -44,7 +54,7 @@ export default () => {
     const cart = Cookies.getJSON('cart');
 
     if (cart) {
-      Heedless.eventBus.emit('Cart:exists', cart);
+      Heedless.eventBus.emit('Cart:created', cart.webUrl);
       return;
     }
 
@@ -57,24 +67,13 @@ export default () => {
           };
 
           Cookies.set('cart', cartCookie);
-          Heedless.eventBus.emit('Cart:created', cartCookie);
+          Heedless.eventBus.emit('Cart:created', cartCookie.webUrl);
           return;
         }
 
         throw new Error('Response not found');
       })
       .catch((error) => error);
-  }
-
-  /**
-   * Set listeners.
-   */
-  function setEventListeners() {
-    Heedless.eventBus.listen([
-      'Cart:created',
-      'Cart:exists',
-    ], (response) => setCheckoutLink(response.webUrl));
-    Heedless.eventBus.listen('Cart:updated', (response) => handleCartUpdate(response));
   }
 
   /**
@@ -151,6 +150,14 @@ export default () => {
   }
 
   /**
+   * Update checkout link with response.
+   * @param {String} url the checkout URL.
+   */
+  function setCheckoutLink(url) {
+    nodeSelectors.checkoutLink.setAttribute('href', url);
+  }
+
+  /**
    * Update cart counter.
    * @param {Object} checkout the checkout response from GraphQL.
    */
@@ -195,15 +202,6 @@ export default () => {
     nodeSelectors.cartCounter.forEach((element) => {
       element.innerText = count;
     });
-  }
-
-  /**
-   * Update checkout link with response.
-   * @param {String} url the checkout URL.
-   */
-  function setCheckoutLink(url) {
-    console.log('url', url);
-    nodeSelectors.checkoutLink.setAttribute('href', url);
   }
 
   return Object.freeze({

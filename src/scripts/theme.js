@@ -8,6 +8,7 @@ import '../styles/theme.scss';
 
 import eventBus from './event-bus';
 import cart from './cart';
+import cartDrawer from './cart-drawer';
 import events from './events';
 import templates from './templates';
 import storage from './storage';
@@ -37,6 +38,7 @@ if ('serviceWorker' in navigator) {
  */
 document.addEventListener('DOMContentLoaded', () => {
   cart().init();
+  cartDrawer().init();
   storage().init();
   events().checkUrl();
   events().addEventListeners();
@@ -44,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Cache images using PWA
-// Make a cart that works
 // Variant selector
 // Collection handle based localStorage
 // Format money

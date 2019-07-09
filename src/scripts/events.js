@@ -8,23 +8,7 @@
  */
 import {on} from './utils';
 
-/**
- * DOM selectors.
- */
-const selectors = {
-  cartCounter: '[js-cart="counter"]',
-  cartDrawer: '[js-cart="drawer"]',
-};
-
 export default () => {
-
-  /**
-   * DOM node selectors.
-   */
-  const nodeSelectors = {
-    cartCounter: [...document.querySelectorAll(selectors.cartCounter)],
-    cartDrawer: document.querySelector(selectors.cartDrawer),
-  };
 
   /**
    * Handle forward/back browser navigation.
@@ -68,7 +52,7 @@ export default () => {
       }
 
       if (isCorrectButton(event.target, 'toggleCartDrawer')) {
-        handleToggleCartDrawerClick();
+        Heedless.eventBus.emit('Cart:openDrawer');
       }
     });
   }
@@ -130,13 +114,6 @@ export default () => {
     updateHistory('Homepage', '/');
     document.querySelector('[js-page="productPage"]').classList.remove('is-active');
     document.querySelector('[js-page="overlay"]').classList.remove('is-active');
-  }
-
-  /**
-   * View a product page.
-   */
-  function handleToggleCartDrawerClick() {
-    nodeSelectors.cartDrawer.classList.add('is-active');
   }
 
   return Object.freeze({
