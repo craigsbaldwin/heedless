@@ -49,11 +49,9 @@ export default () => {
   }
 
   /**
-   * Listen for all client events, filtered by needed
+   * Listen for all client events, filtered by needed.
    */
   function addEventListeners() {
-    Heedless.eventBus.listen('Cart:updated', (response) => updateCounter(response));
-
     on('click', document.querySelector('body'), (event) => {
       if (isCorrectButton(event.target, 'addToCart')) {
         handleAddToCartClick(event.target);
@@ -107,7 +105,7 @@ export default () => {
   function handleAddToCartClick(target) {
     const variantId = target.getAttribute('data-id');
     const lineItem = {
-      id: variantId,
+      variantId,
       quantity: 1,
     };
 
@@ -139,16 +137,6 @@ export default () => {
    */
   function handleToggleCartDrawerClick() {
     nodeSelectors.cartDrawer.classList.add('is-active');
-  }
-
-  /**
-   * Update cart counter.
-   * @param {Object} cart the cart object.
-   */
-  function updateCounter(cart) {
-    nodeSelectors.cartCounter.forEach((element) => {
-      element.innerText = cart.totalCount;
-    });
   }
 
   return Object.freeze({
