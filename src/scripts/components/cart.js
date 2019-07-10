@@ -173,9 +173,9 @@ export default () => {
       counter += lineItem.node.quantity;
 
       return {
+        id: lineItem.node.id,
         variantId: lineItem.node.variant.id,
         quantity: lineItem.node.quantity,
-        title: lineItem.node.title,
       };
     });
 

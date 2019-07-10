@@ -7,12 +7,17 @@
  *
  */
 
+import Cookies from 'js-cookie';
+
+import storage from '../helpers/storage';
+
 /**
  * DOM selectors.
  */
 const selectors = {
-  cartDrawer: '[js-cart="drawer"]',
   overlay: '[js-page="overlay"]',
+  cartDrawer: '[js-cart="drawer"]',
+  cartProducts: '[js-cart="products"]',
 };
 
 export default () => {
@@ -21,8 +26,9 @@ export default () => {
    * DOM node selectors.
    */
   const nodeSelectors = {
-    cartDrawer: document.querySelector(selectors.cartDrawer),
     overlay: document.querySelector(selectors.overlay),
+    cartDrawer: document.querySelector(selectors.cartDrawer),
+    cartProducts: document.querySelector(selectors.cartProducts),
   };
 
   /**
@@ -45,6 +51,8 @@ export default () => {
    * Open the cart drawer.
    */
   function openDrawer() {
+    renderDrawer();
+
     nodeSelectors.cartDrawer.classList.add('is-active');
     nodeSelectors.overlay.classList.add('is-active');
   }
@@ -61,6 +69,29 @@ export default () => {
    * Render the cart drawer.
    */
   function renderDrawer() {
+    const cart = Cookies.getJSON('cart');
+
+    if (!cart) {
+      nodeSelectors.cartProducts.innerHTML = '<p>No products</p>';
+      return;
+    }
+
+    console.log('cart', cart);
+    cart.lineItems.forEach((lineItem) => {
+
+
+      if (Heedless.collections && Heedless.collections.hasOwnProperty()) {
+        return;
+      }
+    });
+  }
+
+  /**
+   * The HTML template for each line item.
+   * @param {Object} lineItem the line item.
+   * @returns the HTML template.
+   */
+  function lineItemTemplate(lineItem) {
 
   }
 

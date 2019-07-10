@@ -82,7 +82,7 @@ export default () => {
                     id
                   }
                   quantity
-                  title
+                  id
                 }
               }
             }

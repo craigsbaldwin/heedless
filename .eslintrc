@@ -32,6 +32,7 @@
     "workbox": true,
     "importScripts": true,
     "console": true,
-    "location": true
+    "location": true,
+    "localStorage": true,
   }
 }
