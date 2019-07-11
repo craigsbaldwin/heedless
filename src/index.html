@@ -17,7 +17,7 @@
     <div class="header">
       <div class="header__container site-width">
         <div class="header__logo">
-          Heedless
+          <a href="javascript:void(0)" js-page="home">Heedless</a>
         </div>
 
         <div class="header__meta">
@@ -44,9 +44,26 @@
     </div>
 
     <div class="site-width container">
-      <div class="homepage is-active" js-page="homepage"></div>
-      <div class="product-page" js-page="productPage"></div>
-      <div class="overlay" js-page="overlay"></div>
+      <div
+        class="homepage is-active"
+        js-page="homepage"
+        js-site="page"
+      >
+      </div>
+
+      <div
+        class="product-page"
+        js-page="productPage"
+        js-site="page"
+      >
+      </div>
+
+      <div
+        class="overlay"
+        js-page="overlay"
+        js-site="page"
+      >
+      </div>
     </div>
   </body>
 </html>

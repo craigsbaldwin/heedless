@@ -13,6 +13,7 @@ import {on} from './utils';
  */
 const selectors = {
   overlay: '[js-page="overlay"]',
+  page: '[js-site="page"]',
 };
 
 export default () => {
@@ -22,6 +23,7 @@ export default () => {
    */
   const nodeSelectors = {
     overlay: document.querySelector(selectors.overlay),
+    page: [...document.querySelectorAll(selectors.page)],
   };
 
   /**
@@ -78,6 +80,10 @@ export default () => {
       if (isCorrectButton(event.target, 'overlay')) {
         Heedless.eventBus.emit('Overlay:close');
       }
+
+      if (isCorrectButton(event.target, 'home')) {
+        handleHomeClick();
+      }
     });
 
     Heedless.eventBus.listen('Overlay:close', () => closeOverlay());
@@ -129,6 +135,18 @@ export default () => {
    */
   function closeOverlay() {
     nodeSelectors.overlay.classList.remove('is-active');
+  }
+
+  /**
+   * Go home.
+   */
+  function handleHomeClick() {
+    nodeSelectors.page.forEach((page) => {
+      page.classList.remove('is-active');
+    });
+
+    Heedless.events.updateHistory('Homepage', '/');
+    Heedless.collection.requestCollection('frontpage');
   }
 
   return Object.freeze({

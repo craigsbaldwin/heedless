@@ -89,6 +89,7 @@ export default () => {
     }).join('');
 
     nodeSelectors.homepage.innerHTML = html;
+    nodeSelectors.homepage.classList.add('is-active');
   }
 
   return Object.freeze({

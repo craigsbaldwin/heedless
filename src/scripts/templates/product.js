@@ -155,7 +155,6 @@ export default () => {
     Heedless.events.updateHistory('Homepage', '/');
 
     nodeSelectors.productPage.classList.remove('is-active');
-    nodeSelectors.homepage.classList.add('is-active');
   }
 
   /**

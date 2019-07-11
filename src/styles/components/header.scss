@@ -11,6 +11,11 @@
 
   &__logo {
     font-size: 18px;
+
+    a {
+      color: $COLOR_BLACK;
+      text-decoration: none;
+    }
   }
 
   &__meta {
