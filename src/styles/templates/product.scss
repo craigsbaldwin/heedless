@@ -1,14 +1,14 @@
 .product-page {
-  background-color: $COLOR_WHITE;
-  border: 1px solid $COLOR_GREY;
-  box-shadow: $BOX_SHADOW;
   display: none;
+  flex-wrap: wrap;
   grid-column: span 4;
-  left: 0;
-  position: absolute;
-  top: 40px;
   width: 100%;
   z-index: 3;
+
+  &__breadcrumbs {
+    margin-bottom: $GUTTER;
+    width: 100%;
+  }
 
   &__image-container {
     flex: 1 1 50%;

@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
   product().init();
   storage().init();
   events().init();
-  collection().requestCollection('frontpage');
 });
 
 // Cache images using PWA

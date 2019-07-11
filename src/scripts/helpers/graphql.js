@@ -106,7 +106,6 @@ export default () => {
     return `
       {
         collectionByHandle(handle: "${handle}") {
-          handle
           products(first: ${limit}) {
             edges {
               node {
@@ -121,10 +120,10 @@ export default () => {
                     }
                   }
                 }
-                variants(first: 1) {
+                collections(first: 5) {
                   edges {
                     node {
-                      id
+                      handle
                     }
                   }
                 }
@@ -150,7 +149,7 @@ export default () => {
           images(first: 1) {
             edges {
               node {
-                transformedSrc(maxWidth: 900)
+                largeImage: transformedSrc(maxWidth: 900)
                 altText
               }
             }
@@ -302,12 +301,39 @@ export default () => {
         .then((response) => response.json())
         .then((response) => {
           const collection = response.data.collectionByHandle;
-          resolve(collection);
+          resolve(convertGetCollectionResponse(collection));
         })
         .catch((error) => {
           return error;
         });
     });
+  }
+
+  /**
+   * Convert GraphQL response to something nicer.
+   * @param {Object} response the original GraphQL response.
+   */
+  function convertGetCollectionResponse(response) {
+    const convertedResponse = {};
+
+    response.products.edges.forEach((product) => {
+      const collections = [];
+
+      product.node.collections.edges.forEach((collection) => {
+        collections.push(collection.node.handle);
+      });
+
+      convertedResponse[product.node.handle] = {
+        title: product.node.title,
+        handle: product.node.handle,
+        images: product.node.images.edges.map((image) => {
+          return image.node;
+        }),
+        collections,
+      };
+    });
+
+    return convertedResponse;
   }
 
   /**
@@ -328,13 +354,39 @@ export default () => {
       fetch(`${shopUrl}/api/graphql`, query)
         .then((response) => response.json())
         .then((response) => {
-          const products = response.data.productByHandle;
-          resolve(products);
+          const product = response.data.productByHandle;
+          resolve(convertGetProductResponse(product));
         })
         .catch((error) => {
           return error;
         });
     });
+  }
+
+  /**
+   * Convert GraphQL response to something nicer.
+   * @param {Object} response the original GraphQL response.
+   */
+  function convertGetProductResponse(response) {
+    const convertedResponse = {};
+
+    convertedResponse[response.handle] = {
+      title: response.title,
+      handle: response.handle,
+      images: response.images.edges.map((image) => {
+        return image.node;
+      }),
+      descriptionHtml: response.descriptionHtml,
+      variants: response.variants.edges.map((variant) => {
+        return {
+          id: variant.node.id,
+          price: variant.node.priceV2.amount,
+        };
+      }),
+      completeData: true,
+    };
+
+    return convertedResponse;
   }
 
   return Object.freeze({

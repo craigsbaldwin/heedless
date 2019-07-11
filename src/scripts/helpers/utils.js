@@ -32,12 +32,14 @@ export function on(event, elem = window, callback, capture = false) {
 
 /**
  * Concatenate two objects together.
- * @param {Object} o1 the first object.
- * @param {Object} o2 the second object.
+ * @param {Object} obj the first object.
+ * @param {Object} src the second object.
  */
-export function concat(o1, o2) {
-  for (var key in o2) {
-    o1[key] = o2[key];
+export function concat(obj, src) {
+  for (const key in src) {
+    if (src.hasOwnProperty(key)) {
+      obj[key] = src[key];
+    }
   }
-  return o1;
+  return obj;
 }

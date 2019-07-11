@@ -1,9 +1,13 @@
 .homepage {
-  display: grid;
+  display: none;
   grid-column-gap: 30px;
   grid-row-gap: 30px;
   grid-template-columns: repeat(2, 1fr);
   z-index: 1;
+
+  &.is-active {
+    display: grid;
+  }
 
   @media screen and (min-width: 900px) {
     grid-template-columns: repeat(4, 1fr);

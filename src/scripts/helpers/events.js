@@ -50,7 +50,7 @@ export default () => {
 
     if (location.search) {
       const handle = location.search.replace('?product=', '');
-      Heedless.product.requestProductPage(handle);
+      Heedless.eventBus.emit('Product:open', handle);
     }
   }
 
@@ -64,7 +64,7 @@ export default () => {
       }
 
       if (isCorrectButton(event.target, 'viewProduct')) {
-        Heedless.eventBus.emit('Product:open', event.target);
+        Heedless.eventBus.emit('Product:open', event.target.getAttribute('data-handle'));
       }
 
       if (isCorrectButton(event.target, 'closeProduct')) {

@@ -7,7 +7,6 @@
  *
  */
 import graphql from '../helpers/graphql';
-import storage from '../helpers/storage';
 
 export default () => {
 
@@ -16,17 +15,18 @@ export default () => {
    * @param {String} handle the collection handle.
    */
   function requestCollection(handle) {
-    if (Heedless.collections && Heedless.collections.hasOwnProperty(handle)) {
+    if (Heedless.collections && Heedless.collections.includes(handle)) {
       window.console.log('Cached Collection');
-      renderProducts(Heedless.collections[handle]);
+      renderProducts(handle);
       return;
     }
 
-    graphql().getCollectionByHandle('frontpage', 5)
+    graphql().getCollectionByHandle(handle, 5)
       .then((response) => {
         if (response) {
-          renderProducts(response);
-          storage().storeCollections(response);
+          Heedless.eventBus.emit('Storage:updated', response);
+          Heedless.eventBus.emit('Storage:newCollection', handle);
+          renderProducts(handle);
           return;
         }
 
@@ -37,56 +37,45 @@ export default () => {
 
   /**
    * Render collection of products.
-   * @param {Object} collection collection of products to render.
+   * @param {String} handle the handle of the collection render.
    */
-  function renderProducts(collection) {
-    const products = collection.products.edges;
+  function renderProducts(handle) {
+    const collectionProducts = Object.values(Heedless.products).filter((product) => {
+      return (product.collections.includes(handle));
+    });
 
-    const html = products.map((productNode) => {
-      const product = productNode.node;
-
+    const html = collectionProducts.map((product) => {
       return `
-      <div class="product-card" js-page="productCard">
-        <div class="product-card__image">
-          <img
-            class="product-page__image"
-            alt="${product.images.edges[0].node.altText}"
-            src="${product.images.edges[0].node.smallImage}"
-            srcset="
-              ${product.images.edges[0].node.smallImage} 300w,
-              ${product.images.edges[0].node.mediumImage} 600w"
-            sizes="auto"
-          >
+        <div class="product-card" js-page="productCard">
+          <div class="product-card__image">
+            <img
+              class="product-page__image"
+              alt="${product.images[0].altText}"
+              src="${product.images[0].smallImage}"
+              srcset="
+                ${product.images[0].smallImage} 300w,
+                ${product.images[0].mediumImage} 600w"
+              sizes="auto"
+            >
+          </div>
+
+          <div class="product-card__footer">
+            <h2>${product.title}</h2>
+
+            <button
+              class="button button--alt button--outline"
+              data-handle="${product.handle}"
+              js-page="viewProduct"
+            >
+              View Product
+            </button>
+          </div>
         </div>
-
-        <div
-          class="product-card__footer"
-
-
-        >
-          <h2>${product.title}</h2>
-
-          <button
-            class="button"
-            data-id="${product.variants.edges[0].node.id}"
-            js-page="addToCart"
-          >
-            Add To Cart
-          </button>
-
-          <button
-            class="button button--alt"
-            data-handle="${product.handle}"
-            js-page="viewProduct"
-          >
-            View Product
-          </button>
-        </div>
-      </div>
-    `;
+      `;
     }).join('');
 
     document.querySelector('[js-page="homepage"]').innerHTML = html;
+    document.querySelector('[js-page="homepage"]').classList.add('is-active');
   }
 
   return Object.freeze({

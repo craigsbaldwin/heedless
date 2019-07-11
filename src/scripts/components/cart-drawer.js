@@ -9,8 +9,6 @@
 
 import Cookies from 'js-cookie';
 
-import storage from '../helpers/storage';
-
 /**
  * DOM selectors.
  */
@@ -71,7 +69,7 @@ export default () => {
   function renderDrawer() {
     const cart = Cookies.getJSON('cart');
 
-    if (!cart) {
+    if (!cart.lineItems) {
       nodeSelectors.cartProducts.innerHTML = '<p>No products</p>';
       return;
     }

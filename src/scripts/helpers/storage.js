@@ -6,55 +6,59 @@
  * @namespace storage
  *
  */
+import _merge from 'lodash.merge';
+
 export default() => {
 
   /**
    * Init the storage variables.
    */
   function init() {
-    Heedless.collections = JSON.parse(localStorage.getItem('collections')) || {};
+    setEventListeners();
     Heedless.products = JSON.parse(localStorage.getItem('products')) || {};
+    Heedless.collections = JSON.parse(localStorage.getItem('collections')) || {};
+  }
+
+  function setEventListeners() {
+    Heedless.eventBus.listen('Storage:updated', (response) => storeData(response));
+    Heedless.eventBus.listen('Storage:newCollection', (response) => storeCollection(response));
   }
 
   /**
-   * Add new single product to local storage.
-   * @param {Object} product the content to add.
+   * Store the data to localStorage.
+   * @param {Object} response the GraphQL response.
    */
-  function storeProducts(product) {
-    const productHandle = product.handle;
-    const content = JSON.parse(localStorage.getItem('products'));
+  function storeData(response) {
+    const currentStorage = JSON.parse(localStorage.getItem('products'));
 
-    if (content) {
-      Heedless.products[productHandle] = product;
-      localStorage.setItem('products', JSON.stringify(Heedless.products));
-      return;
+    if (currentStorage) {
+      Heedless.products = _merge(currentStorage, response);
+    } else {
+      Heedless.products = response;
     }
 
-    Heedless.products[productHandle] = product;
     localStorage.setItem('products', JSON.stringify(Heedless.products));
   }
 
-  /**
-   * Add new collection of products to local storage.
-   * @param {Object} collection the collection of products to add.
-   */
-  function storeCollections(collection) {
-    const collectionHandle = collection.handle;
-    const content = JSON.parse(localStorage.getItem('collections'));
+  function storeCollection(handle) {
+    const currentStorage = localStorage.getItem('collections');
+    let array = [];
 
-    if (content) {
-      Heedless.collections[collectionHandle] = collection;
-      localStorage.setItem('collections', JSON.stringify(Heedless.collections));
+    if (currentStorage) {
+      array = currentStorage;
+    }
+
+    if (array.includes(handle)) {
       return;
     }
 
-    Heedless.collections[collectionHandle] = collection;
+    array.push(handle);
+    Heedless.collections = array;
+
     localStorage.setItem('collections', JSON.stringify(Heedless.collections));
   }
 
   return Object.freeze({
-    storeProducts,
-    storeCollections,
     init,
   });
-}
+};

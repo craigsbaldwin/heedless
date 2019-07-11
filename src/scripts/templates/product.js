@@ -42,12 +42,104 @@ export default () => {
   }
 
   /**
-   * Open a product page.
-   * @param {HTMLElement} target the clicked button (has data attributes).
+   * Request the product page.
+   * @param {String} handle the product handle to render.
    */
-  function openProductPage(target) {
-    const handle = target.getAttribute('data-handle');
-    requestProductPage(handle);
+  function openProductPage(handle) {
+    if (Heedless.products && Heedless.products[handle].completeData) {
+      window.console.log('Cached Product Page');
+      renderProduct(handle);
+      return;
+    }
+
+    graphql().getProductByHandle(handle)
+      .then((response) => {
+        if (response) {
+          Heedless.eventBus.emit('Storage:updated', response);
+          renderProduct(handle);
+          return;
+        }
+
+        throw new Error('Response not found');
+      })
+      .catch((error) => error);
+  }
+
+  /**
+   * Render the product page.
+   * @param {String} handle the product handle to render.
+   */
+  function renderProduct(handle) {
+    const product = Heedless.products[handle];
+    const url = `?product=${product.handle}`;
+
+    Heedless.events.updateHistory(product.title, url);
+
+    document.querySelector('[js-page="productPage"]').innerHTML = productTemplate(product);
+    document.querySelector('[js-page="homepage"]').classList.remove('is-active');
+    document.querySelector('[js-page="productPage"]').classList.add('is-active');
+  }
+
+  /**
+   * The product template.
+   * @param {Object} product the product to render.
+   * @returns {HTML} the product template.
+   */
+  function productTemplate(product) {
+    return `
+    <div class="product-page__breadcrumbs breadcrumbs">
+      <a
+        class="breadcrumbs__breadcrumb breadcrumbs__breadcrumb--link"
+        href="javascript:void(0)"
+        js-page="closeProduct"
+      >
+        Home
+      </a>
+
+      <span class="breadcrumbs__breadcrumb">
+        ${product.title}
+      </span>
+    </div>
+
+    <div class="product-page__image-container">
+      <img
+        class="product-page__image"
+        alt="${product.images[0].altText}"
+        src="${product.images[0].smallImage}"
+        srcset="
+          ${product.images[0].smallImage} 300w,
+          ${product.images[0].mediumImage} 600w",
+          ${product.images[0].largeImage} 900w",
+        sizes="auto"
+      >
+    </div>
+
+    <div class="product-page__meta">
+      <h1 class="product-page__title">${product.title}</h1>
+
+      <div class="product-page__description">${product.descriptionHtml}</div>
+
+      <strong class="product-page__price">
+        ${formatMoney(product.variants[0].price)}
+      </strong>
+
+      <button
+        class="button button--large"
+        data-id="${product.variants[0].id}"
+        js-page="addToCart"
+      >
+        Add To Cart
+      </button>
+    </div>
+  `;
+  }
+
+  /**
+   * Format money into correct format.
+   * @param {String} amount the amount to format.
+   */
+  function formatMoney(amount) {
+    return `£${amount}`;
   }
 
   /**
@@ -61,90 +153,7 @@ export default () => {
     nodeSelectors.overlay.classList.remove('is-active');
   }
 
-  /**
-   * Request the product page.
-   * @param {String} handle the product handle to render.
-   */
-  function requestProductPage(handle) {
-    if (Heedless.products && Heedless.products.hasOwnProperty(handle)) {
-      window.console.log('Cached Product Page');
-      renderProduct(Heedless.products[handle]);
-      return;
-    }
-
-    graphql().getProductByHandle(handle)
-      .then((response) => {
-        if (response) {
-          renderProduct(response);
-          storage().storeProducts(response);
-          return;
-        }
-
-        throw new Error('Response not found');
-      })
-      .catch((error) => error);
-  }
-
-  /**
-   * Render the product page.
-   * @param {Object} product the product to load.
-   */
-  function renderProduct(product) {
-    const url = `?product=${product.handle}`;
-
-    Heedless.events.updateHistory(product.title, url);
-
-    document.querySelector('[js-page="productPage"]').innerHTML = productTemplate(product);
-    document.querySelector('[js-page="productPage"]').classList.add('is-active');
-    document.querySelector('[js-page="overlay"]').classList.add('is-active');
-  }
-
-  /**
-   * The product template.
-   * @param {Object} product the product to render.
-   * @returns {HTML} the product template.
-   */
-  function productTemplate(product) {
-    return `
-    <div class="product-page__image-container">
-      <img class="product-page__image"
-        alt="${product.images.edges[0].node.altText}"
-        src="${product.images.edges[0].node.transformedSrc}"
-      >
-    </div>
-
-    <div class="product-page__meta">
-      <h1 class="product-page__title">${product.title}</h1>
-
-      <div class="product-page__description">${product.descriptionHtml}</div>
-
-      <strong class="product-page__price">
-        ${formatMoney(product.variants.edges[0].node.priceV2.amount)}
-      </strong>
-
-      <button
-        class="button button--large"
-        data-id="${product.variants.edges[0].node.id}"
-        js-page="addToCart"
-      >
-        Add To Cart
-      </button>
-
-      <button class="button button--large button--alt" js-page="closeProduct">Close</button>
-    </div>
-  `;
-  }
-
-  /**
-   * Format money into correct format.
-   * @param {String} amount the amount to format.
-   */
-  function formatMoney(amount) {
-    return `£${amount}`;
-  }
-
   return Object.freeze({
     init,
-    requestProductPage,
   });
 };

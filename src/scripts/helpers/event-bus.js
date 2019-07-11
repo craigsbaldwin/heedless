@@ -35,8 +35,6 @@ export default () => {
       return false;
     }
 
-    console.log(event);
-
     return [...eventBus[event]].forEach((handler) => handler(data));
   }
 
