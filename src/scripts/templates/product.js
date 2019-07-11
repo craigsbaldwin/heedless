@@ -8,6 +8,7 @@
  */
 
 import graphql from '../helpers/graphql';
+import {on} from '../helpers/utils';
 
 /**
  * DOM selectors.
@@ -15,6 +16,7 @@ import graphql from '../helpers/graphql';
 const selectors = {
   homepage: '[js-page="homepage"]',
   productPage: '[js-page="productPage"]',
+  variantSelector: '[js-product="variantSelector"]',
   addToCartButton: '[js-page="addToCart"]',
 };
 
@@ -81,6 +83,8 @@ export default () => {
     nodeSelectors.productPage.innerHTML = productTemplate(product);
     nodeSelectors.homepage.classList.remove('is-active');
     nodeSelectors.productPage.classList.add('is-active');
+
+    setRenderedEventListeners();
   }
 
   /**
@@ -170,10 +174,27 @@ export default () => {
   }
 
   /**
+   * Set event listeners which only work on render.
+   */
+  function setRenderedEventListeners() {
+    on('change', nodeSelectors.productPage.querySelector(selectors.variantSelector), (event) => {
+      handleVariantChange(event.target);
+    });
+  }
+
+  /**
+   * Handle variant select change.
+   * @param {HTMLObject} target the changed select.
+   */
+  function handleVariantChange(target) {
+    console.log('change');
+  }
+
+  /**
    * Close the product page.
    */
   function closeProductPage() {
-    Heedless.collection.requestCollection('frontpage');
+    Heedless.eventBus.emit('Collection:open', 'frontpage');
     Heedless.events.updateHistory('Homepage', '/');
 
     nodeSelectors.productPage.classList.remove('is-active');

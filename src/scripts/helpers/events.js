@@ -146,7 +146,7 @@ export default () => {
     });
 
     Heedless.events.updateHistory('Homepage', '/');
-    Heedless.collection.requestCollection('frontpage');
+    Heedless.eventBus.emit('Collection:open', 'frontpage');
   }
 
   return Object.freeze({

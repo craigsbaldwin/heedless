@@ -53,3 +53,4 @@ document.addEventListener('DOMContentLoaded', () => {
 // Quantity selector
 // Inventory limits to quantity selectors
 // Render cart
+// Create global page thing to manage history
