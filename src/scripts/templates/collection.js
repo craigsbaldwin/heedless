@@ -25,10 +25,24 @@ export default () => {
   };
 
   /**
+   * Init the collection page.
+   */
+  function init() {
+    setEventListeners();
+  }
+
+  /**
+   * Listen for all event bus events.
+   */
+  function setEventListeners() {
+    Heedless.eventBus.listen('Collection:open', (response) => openCollectionPage(response));
+  }
+
+  /**
    * Request a collection.
    * @param {String} handle the collection handle.
    */
-  function requestCollection(handle) {
+  function openCollectionPage(handle) {
     if (Heedless.collections && Heedless.collections.includes(handle)) {
       window.console.log('Cached Collection');
       renderProducts(handle);
@@ -93,6 +107,6 @@ export default () => {
   }
 
   return Object.freeze({
-    requestCollection,
+    init,
   });
 };

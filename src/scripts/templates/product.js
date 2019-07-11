@@ -36,7 +36,7 @@ export default () => {
   }
 
   /**
-   * Listen for all client events, filtered by needed.
+   * Listen for all event bus events.
    */
   function setEventListeners() {
     Heedless.eventBus.listen('Product:open', (response) => openProductPage(response));
@@ -49,7 +49,7 @@ export default () => {
    * @param {String} handle the product handle to render.
    */
   function openProductPage(handle) {
-    if (Heedless.products && Heedless.products[handle].completeData) {
+    if (Heedless.products && Heedless.products[handle] && Heedless.products[handle].completeData) {
       window.console.log('Cached Product Page');
       renderProduct(handle);
       return;
@@ -90,51 +90,57 @@ export default () => {
    */
   function productTemplate(product) {
     return `
-    <div class="product-page__breadcrumbs breadcrumbs">
-      <a
-        class="breadcrumbs__breadcrumb breadcrumbs__breadcrumb--link"
-        href="javascript:void(0)"
-        js-page="closeProduct"
-      >
-        Home
-      </a>
+      <div class="product-page__breadcrumbs breadcrumbs">
+        <a
+          class="breadcrumbs__breadcrumb breadcrumbs__breadcrumb--link"
+          href="javascript:void(0)"
+          js-page="closeProduct"
+        >
+          Home
+        </a>
 
-      <span class="breadcrumbs__breadcrumb">
-        ${product.title}
-      </span>
-    </div>
+        <span class="breadcrumbs__breadcrumb">
+          ${product.title}
+        </span>
+      </div>
 
-    <div class="product-page__image-container">
-      <img
-        class="product-page__image"
-        alt="${product.images[0].altText}"
-        src="${product.images[0].smallImage}"
-        srcset="
-          ${product.images[0].smallImage} 300w,
-          ${product.images[0].mediumImage} 600w",
-          ${product.images[0].largeImage} 900w",
-        sizes="auto"
-      >
-    </div>
+      <div class="product-page__image-container">
+        <img
+          class="product-page__image"
+          alt="${product.images[0].altText}"
+          src="${product.images[0].smallImage}"
+          srcset="
+            ${product.images[0].smallImage} 300w,
+            ${product.images[0].mediumImage} 600w",
+            ${product.images[0].largeImage} 900w",
+          sizes="auto"
+        >
+      </div>
 
-    <div class="product-page__meta">
-      <h1 class="product-page__title">${product.title}</h1>
+      <div class="product-page__meta">
+        <h1 class="product-page__title">${product.title}</h1>
 
-      <div class="product-page__description">${product.descriptionHtml}</div>
+        <div class="product-page__description">${product.descriptionHtml}</div>
 
-      <strong class="product-page__price">
-        ${formatMoney(product.variants[0].price)}
-      </strong>
+        <strong class="product-page__price">
+          ${formatMoney(product.variants[0].price)}
+        </strong>
 
-      <button
-        class="button button--large"
-        data-id="${product.variants[0].id}"
-        js-page="addToCart"
-      >
-        Add To Cart
-      </button>
-    </div>
-  `;
+        <div class="product-page__variants">
+          <select name="id" js-product="variantSelector">
+            ${renderVariants(product.variants)}
+          </select>
+        </div>
+
+        <button
+          class="button button--large"
+          data-id="${product.variants[0].id}"
+          js-page="addToCart"
+        >
+          Add To Cart
+        </button>
+      </div>
+    `;
   }
 
   /**
@@ -145,6 +151,22 @@ export default () => {
     const value = Number(amount).toFixed(2);
 
     return `£${value}`;
+  }
+
+  /**
+   * Render the variant selectors.
+   * @param {Object} variants the product's variants.
+   */
+  function renderVariants(variants) {
+    const html = variants.map((variant) => {
+      return `
+        <option value="${variant.id}">
+          ${variant.title} - ${formatMoney(variant.price)}
+        </option>
+      `;
+    }).join('');
+
+    return html;
   }
 
   /**

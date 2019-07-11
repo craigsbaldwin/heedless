@@ -27,13 +27,17 @@
     width: 50%;
   }
 
-  &__price {
-    display: block;
-    margin-bottom: 40px;
+  &__description {
+    margin-bottom: $GUTTER;
   }
 
-  &__description {
-    margin-bottom: 20px;
+  &__price {
+    display: block;
+    margin-bottom: ($GUTTER / 2);
+  }
+
+  &__variants {
+    margin-bottom: $GUTTER;
   }
 
   &.is-active {

@@ -149,14 +149,17 @@ export default () => {
           images(first: 1) {
             edges {
               node {
+                smallImage: transformedSrc(maxWidth: 300)
+                mediumImage: transformedSrc(maxWidth: 600)
                 largeImage: transformedSrc(maxWidth: 900)
                 altText
               }
             }
           }
-          variants(first: 1) {
+          variants(first: 5) {
             edges {
               node {
+                title
                 id
                 priceV2 {
                   amount
@@ -379,6 +382,7 @@ export default () => {
       descriptionHtml: response.descriptionHtml,
       variants: response.variants.edges.map((variant) => {
         return {
+          title: variant.node.title,
           id: variant.node.id,
           price: variant.node.priceV2.amount,
         };

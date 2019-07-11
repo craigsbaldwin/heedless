@@ -26,8 +26,6 @@ window.Heedless.collections = window.Heedless.collections || {};
 window.Heedless.products = window.Heedless.products || {};
 window.Heedless.cart = cart();
 window.Heedless.events = events();
-window.Heedless.collection = collection();
-window.Heedless.product = product();
 
 // /**
 //  * Service worker.
@@ -44,6 +42,7 @@ if ('serviceWorker' in navigator) {
 document.addEventListener('DOMContentLoaded', () => {
   cart().init();
   cartDrawer().init();
+  collection().init();
   product().init();
   storage().init();
   events().init();
@@ -51,3 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Cache images using PWA
 // Variant selector
+// Quantity selector
+// Inventory limits to quantity selectors
+// Render cart

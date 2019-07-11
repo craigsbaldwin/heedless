@@ -16,7 +16,7 @@ export default() => {
   function init() {
     setEventListeners();
     Heedless.products = JSON.parse(localStorage.getItem('products')) || {};
-    Heedless.collections = JSON.parse(localStorage.getItem('collections')) || {};
+    Heedless.collections = JSON.parse(localStorage.getItem('collections')) || [];
   }
 
   function setEventListeners() {

@@ -46,7 +46,7 @@ export default () => {
    */
   function checkUrl() {
     if (location.href === `${location.origin}/`) {
-      Heedless.collection.requestCollection('frontpage');
+      Heedless.eventBus.emit('Collection:open', 'frontpage');
       return;
     }
 
