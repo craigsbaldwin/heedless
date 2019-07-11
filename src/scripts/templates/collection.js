@@ -8,7 +8,21 @@
  */
 import graphql from '../helpers/graphql';
 
+/**
+ * DOM selectors.
+ */
+const selectors = {
+  homepage: '[js-page="homepage"]',
+};
+
 export default () => {
+
+  /**
+   * DOM node selectors.
+   */
+  const nodeSelectors = {
+    homepage: document.querySelector(selectors.homepage),
+  };
 
   /**
    * Request a collection.
@@ -74,8 +88,7 @@ export default () => {
       `;
     }).join('');
 
-    document.querySelector('[js-page="homepage"]').innerHTML = html;
-    document.querySelector('[js-page="homepage"]').classList.add('is-active');
+    nodeSelectors.homepage.innerHTML = html;
   }
 
   return Object.freeze({

@@ -8,13 +8,14 @@
  */
 
 import graphql from '../helpers/graphql';
-import storage from '../helpers/storage';
 
 /**
  * DOM selectors.
  */
 const selectors = {
-  overlay: '[js-page="overlay"]',
+  homepage: '[js-page="homepage"]',
+  productPage: '[js-page="productPage"]',
+  addToCartButton: '[js-page="addToCart"]',
 };
 
 export default () => {
@@ -23,7 +24,8 @@ export default () => {
    * DOM node selectors.
    */
   const nodeSelectors = {
-    overlay: document.querySelector(selectors.overlay),
+    homepage: document.querySelector(selectors.homepage),
+    productPage: document.querySelector(selectors.productPage),
   };
 
   /**
@@ -39,6 +41,7 @@ export default () => {
   function setEventListeners() {
     Heedless.eventBus.listen('Product:open', (response) => openProductPage(response));
     Heedless.eventBus.listen('Product:close', () => closeProductPage());
+    Heedless.eventBus.listen('Cart:updated', () => resetAddToCartButton());
   }
 
   /**
@@ -75,9 +78,9 @@ export default () => {
 
     Heedless.events.updateHistory(product.title, url);
 
-    document.querySelector('[js-page="productPage"]').innerHTML = productTemplate(product);
-    document.querySelector('[js-page="homepage"]').classList.remove('is-active');
-    document.querySelector('[js-page="productPage"]').classList.add('is-active');
+    nodeSelectors.productPage.innerHTML = productTemplate(product);
+    nodeSelectors.homepage.classList.remove('is-active');
+    nodeSelectors.productPage.classList.add('is-active');
   }
 
   /**
@@ -139,7 +142,9 @@ export default () => {
    * @param {String} amount the amount to format.
    */
   function formatMoney(amount) {
-    return `£${amount}`;
+    const value = Number(amount).toFixed(2);
+
+    return `£${value}`;
   }
 
   /**
@@ -149,8 +154,22 @@ export default () => {
     Heedless.collection.requestCollection('frontpage');
     Heedless.events.updateHistory('Homepage', '/');
 
-    document.querySelector('[js-page="productPage"]').classList.remove('is-active');
-    nodeSelectors.overlay.classList.remove('is-active');
+    nodeSelectors.productPage.classList.remove('is-active');
+    nodeSelectors.homepage.classList.add('is-active');
+  }
+
+  /**
+   * Resets the add to cart button.
+   */
+  function resetAddToCartButton() {
+    const addToCartButton = nodeSelectors.productPage.querySelector(selectors.addToCartButton);
+
+    addToCartButton.classList.remove('is-disabled');
+    addToCartButton.innerText = 'Added to Cart';
+
+    window.setTimeout(() => {
+      addToCartButton.innerText = 'Add to Cart';
+    }, 2500);
   }
 
   return Object.freeze({

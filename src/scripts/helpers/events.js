@@ -119,6 +119,8 @@ export default () => {
       quantity: 1,
     };
 
+    target.innerText = 'Adding';
+    target.classList.add('is-disabled');
     Heedless.eventBus.emit('Cart:addToCart', lineItem);
   }
 

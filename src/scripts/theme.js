@@ -51,5 +51,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Cache images using PWA
 // Variant selector
-// Collection handle based localStorage
-// Format money

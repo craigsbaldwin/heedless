@@ -35,4 +35,9 @@
       background-color: $COLOR_CONCRETE_DARK;
     }
   }
+
+  &.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
