@@ -115,8 +115,7 @@ export default () => {
                 images(first: 1) {
                   edges {
                     node {
-                      smallImage: transformedSrc(maxWidth: 300)
-                      mediumImage: transformedSrc(maxWidth: 600)
+                      originalSrc
                       altText
                     }
                   }
@@ -150,9 +149,7 @@ export default () => {
           images(first: 1) {
             edges {
               node {
-                smallImage: transformedSrc(maxWidth: 300)
-                mediumImage: transformedSrc(maxWidth: 600)
-                largeImage: transformedSrc(maxWidth: 900)
+                originalSrc
                 altText
               }
             }

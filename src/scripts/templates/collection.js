@@ -7,6 +7,7 @@
  *
  */
 import graphql from '../helpers/graphql';
+import {imageParameters} from '../helpers/utils';
 
 /**
  * DOM selectors.
@@ -111,10 +112,12 @@ export default () => {
             <img
               class="product-card__image"
               alt="${product.images[0].altText}"
-              src="${product.images[0].smallImage}"
+              src="${imageParameters(product.images[0].originalSrc, {size: '300x'})}"
               srcset="
-                ${product.images[0].smallImage} 300w,
-                ${product.images[0].mediumImage} 600w"
+                ${imageParameters(product.images[0].originalSrc, {size: '300x'})} 300w,
+                ${imageParameters(product.images[0].originalSrc, {size: '600x'})} 600w",
+                ${imageParameters(product.images[0].originalSrc, {size: '900x'})} 900w",
+                ${imageParameters(product.images[0].originalSrc, {size: '1200x'})} 1200w",
               sizes="auto"
             >
           </div>

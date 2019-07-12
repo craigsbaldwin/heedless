@@ -8,7 +8,7 @@
  */
 
 import graphql from '../helpers/graphql';
-import {on, formatMoney} from '../helpers/utils';
+import {on, formatMoney, imageParameters} from '../helpers/utils';
 
 /**
  * DOM selectors.
@@ -114,11 +114,12 @@ export default () => {
         <img
           class="product-page__image"
           alt="${product.images[0].altText}"
-          src="${product.images[0].smallImage}"
+          src="${imageParameters(product.images[0].originalSrc, {size: '300x'})}"
           srcset="
-            ${product.images[0].smallImage} 300w,
-            ${product.images[0].mediumImage} 600w",
-            ${product.images[0].largeImage} 900w",
+            ${imageParameters(product.images[0].originalSrc, {size: '300x'})} 300w,
+            ${imageParameters(product.images[0].originalSrc, {size: '600x'})} 600w",
+            ${imageParameters(product.images[0].originalSrc, {size: '900x'})} 900w",
+            ${imageParameters(product.images[0].originalSrc, {size: '1200x'})} 1200w",
           sizes="auto"
         >
       `;
@@ -222,7 +223,7 @@ export default () => {
     const price = formatMoney(selectedOption.getAttribute('data-price'));
 
     nodeSelectors.productPage.querySelector(selectors.addToCartButton).setAttribute('data-id', selectedOption.value);
-    nodeSelectors.productPage.querySelector(selectors.price).innerText = `<strong class="product-page__price">${price}</strong>`;
+    nodeSelectors.productPage.querySelector(selectors.price).innerHTML = `<strong class="product-page__price">${price}</strong>`;
   }
 
   /**
@@ -243,6 +244,7 @@ export default () => {
 
     addToCartButton.classList.remove('is-disabled');
     addToCartButton.innerText = 'Added to Cart';
+    Heedless.eventBus.emit('Cart:openDrawer');
 
     window.setTimeout(() => {
       addToCartButton.innerText = 'Add to Cart';

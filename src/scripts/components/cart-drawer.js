@@ -10,7 +10,7 @@
 import Cookies from 'js-cookie';
 import _merge from 'lodash.merge';
 
-import {formatMoney} from '../helpers/utils';
+import {formatMoney, imageParameters} from '../helpers/utils';
 
 /**
  * DOM selectors.
@@ -144,10 +144,12 @@ export default () => {
         <img
           class="line-item__image"
           alt="${lineItem.images[0].altText}"
-          src="${lineItem.images[0].smallImage}"
+          src="${imageParameters(lineItem.images[0].originalSrc, {size: '300x'})}"
           srcset="
-            ${lineItem.images[0].smallImage} 300w,
-            ${lineItem.images[0].mediumImage} 600w"
+            ${imageParameters(lineItem.images[0].originalSrc, {size: '300x'})} 300w,
+            ${imageParameters(lineItem.images[0].originalSrc, {size: '600x'})} 600w",
+            ${imageParameters(lineItem.images[0].originalSrc, {size: '900x'})} 900w",
+            ${imageParameters(lineItem.images[0].originalSrc, {size: '1200x'})} 1200w",
           sizes="auto"
         >
       `;
