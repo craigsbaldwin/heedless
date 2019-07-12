@@ -83,6 +83,7 @@ export default () => {
                   }
                   quantity
                   id
+                  title
                 }
               }
             }
@@ -156,7 +157,7 @@ export default () => {
               }
             }
           }
-          variants(first: 5) {
+          variants(first: 10) {
             edges {
               node {
                 title

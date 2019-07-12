@@ -34,6 +34,7 @@ export function on(event, elem = window, callback, capture = false) {
  * Concatenate two objects together.
  * @param {Object} obj the first object.
  * @param {Object} src the second object.
+ * @returns a single combined object.
  */
 export function concat(obj, src) {
   for (const key in src) {
@@ -42,4 +43,15 @@ export function concat(obj, src) {
     }
   }
   return obj;
+}
+
+/**
+ * Format money into correct format.
+ * @param {String} amount the amount to format.
+ * @returns the formatted value.
+ */
+export function formatMoney(amount) {
+  const value = Number(amount).toFixed(2);
+
+  return `£${value}`;
 }

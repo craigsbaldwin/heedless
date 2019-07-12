@@ -8,7 +8,7 @@
  */
 
 import graphql from '../helpers/graphql';
-import {on} from '../helpers/utils';
+import {on, formatMoney} from '../helpers/utils';
 
 /**
  * DOM selectors.
@@ -16,6 +16,7 @@ import {on} from '../helpers/utils';
 const selectors = {
   homepage: '[js-page="homepage"]',
   productPage: '[js-page="productPage"]',
+  price: '[js-product="price"]',
   variantSelector: '[js-product="variantSelector"]',
   addToCartButton: '[js-page="addToCart"]',
 };
@@ -126,7 +127,7 @@ export default () => {
 
         <div class="product-page__description">${product.descriptionHtml}</div>
 
-        <strong class="product-page__price">
+        <strong class="product-page__price" js-product="price">
           ${formatMoney(product.variants[0].price)}
         </strong>
 
@@ -148,23 +149,13 @@ export default () => {
   }
 
   /**
-   * Format money into correct format.
-   * @param {String} amount the amount to format.
-   */
-  function formatMoney(amount) {
-    const value = Number(amount).toFixed(2);
-
-    return `£${value}`;
-  }
-
-  /**
    * Render the variant selectors.
    * @param {Object} variants the product's variants.
    */
   function renderVariants(variants) {
     const html = variants.map((variant) => {
       return `
-        <option value="${variant.id}">
+        <option value="${variant.id}" data-price="${variant.price}">
           ${variant.title} - ${formatMoney(variant.price)}
         </option>
       `;
@@ -187,7 +178,12 @@ export default () => {
    * @param {HTMLObject} target the changed select.
    */
   function handleVariantChange(target) {
-    console.log('change');
+    const selectedOption = target.querySelector(`[value="${target.value}"]`);
+
+    const price = formatMoney(selectedOption.getAttribute('data-price'));
+
+    nodeSelectors.productPage.querySelector(selectors.addToCartButton).setAttribute('data-id', selectedOption.value);
+    nodeSelectors.productPage.querySelector(selectors.price).innerText = price;
   }
 
   /**

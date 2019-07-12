@@ -4,9 +4,9 @@
  * Main stylesheet file.
  *
  */
-
 @import './base/variables';
 @import './base/reset';
+@import './base/loading';
 @import './base/typography';
 
 @import './templates/all';
@@ -17,4 +17,5 @@
 @import './components/button';
 @import './components/cart-drawer';
 @import './components/header';
+@import './components/line-item';
 @import './components/product-card';

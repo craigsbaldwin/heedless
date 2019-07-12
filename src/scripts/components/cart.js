@@ -176,6 +176,7 @@ export default () => {
         id: lineItem.node.id,
         variantId: lineItem.node.variant.id,
         quantity: lineItem.node.quantity,
+        title: lineItem.node.title,
       };
     });
 
@@ -205,8 +206,16 @@ export default () => {
     });
   }
 
+  /**
+   * Get command for console.
+   */
+  function get() {
+    return Cookies.getJSON('cart');
+  }
+
   return Object.freeze({
     init,
     addToCart,
+    get,
   });
 };

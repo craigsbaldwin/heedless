@@ -1,0 +1,32 @@
+$LOADING_WIDTH: 40px;
+
+@keyframes loading {
+  from {
+    left: -$LOADING_WIDTH;
+  }
+
+  to {
+    left: 100%;
+  }
+}
+
+.loading {
+  background-color: $COLOR_CLOUDS;
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: 100%;
+
+  &::after {
+    animation: loading 0.7s ease infinite;
+    background-image: linear-gradient(to right, rgba($COLOR_WHITE, 0), rgba($COLOR_WHITE, 0.6), rgba($COLOR_WHITE, 0));
+    content: '';
+    height: 100%;
+    left: -$LOADING_WIDTH;
+    position: absolute;
+    top: 0;
+    width: $LOADING_WIDTH;
+  }
+}

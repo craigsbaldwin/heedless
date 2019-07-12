@@ -18,6 +18,10 @@
     padding: 20px;
   }
 
+  &__line-item {
+    margin-bottom: ($GUTTER / 2);
+  }
+
   &__footer {
     flex: 0 0 auto;
     padding: 20px;

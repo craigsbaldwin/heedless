@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Cache images using PWA
-// Variant selector
 // Quantity selector
 // Inventory limits to quantity selectors
 // Render cart
 // Create global page thing to manage history
+// Add loading states to all content

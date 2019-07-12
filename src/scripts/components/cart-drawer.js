@@ -8,6 +8,9 @@
  */
 
 import Cookies from 'js-cookie';
+import _merge from 'lodash.merge';
+
+import {formatMoney} from '../helpers/utils';
 
 /**
  * DOM selectors.
@@ -74,13 +77,53 @@ export default () => {
       return;
     }
 
-    console.log('cart', cart);
+    /**
+     * Render loading state.
+     */
+    const html = cart.lineItems.map((lineItem) => {
+      return lineItemTemplate(lineItem);
+    }).join('');
+
+    nodeSelectors.cartProducts.innerHTML = html;
+
+    /**
+     * Render loaded state.
+     */
     cart.lineItems.forEach((lineItem) => {
-
-
-      if (Heedless.collections && Heedless.collections.hasOwnProperty()) {
+      if (!Heedless.products) {
+        requestLineItemData(lineItem);
         return;
       }
+
+      /**
+       * Find matching product and variant in storage.
+       */
+      const matchingProduct = Object.values(Heedless.products).find((product) => {
+        return (product.variants && product.variants.some((variant) => variant.id === lineItem.variantId));
+      });
+
+      if (!matchingProduct || !matchingProduct.completeData) {
+        requestLineItemData(lineItem);
+        return;
+      }
+
+      const matchingVariant = matchingProduct.variants.find((variant) => {
+        return (variant.id === lineItem.variantId);
+      });
+
+      /**
+       * Create combined line item data.
+       */
+      const combinedLineItem = _merge(lineItem, matchingProduct);
+      combinedLineItem.price = matchingVariant.price;
+
+      /**
+       * Render using this data and replace existing.
+       */
+      const oldLineItem = nodeSelectors.cartProducts.querySelector(`[data-variant-id="${lineItem.variantId}"]`);
+      const newLineItem = document.createElement('div');
+      newLineItem.innerHTML = lineItemTemplate(combinedLineItem);
+      oldLineItem.parentNode.replaceChild(newLineItem, oldLineItem);
     });
   }
 
@@ -90,6 +133,55 @@ export default () => {
    * @returns the HTML template.
    */
   function lineItemTemplate(lineItem) {
+    let type = 'loading';
+    let price = `<div class="loading"></div>`;
+    let image = `<div class="loading"></div>`;
+
+    if (lineItem.completeData) {
+      type = 'complete';
+
+      image = `
+        <img
+          class="line-item__image"
+          alt="${lineItem.images[0].altText}"
+          src="${lineItem.images[0].smallImage}"
+          srcset="
+            ${lineItem.images[0].smallImage} 300w,
+            ${lineItem.images[0].mediumImage} 600w"
+          sizes="auto"
+        >
+      `;
+
+      price = `<span class="line-item__price">${formatMoney(lineItem.price)}</span>`;
+    }
+
+    return `
+      <div
+        class="cart-drawer__line-item line-item line-item--${type}"
+        data-variant-id="${lineItem.variantId}"
+      >
+        <div class="line-item__image-container">
+          ${image}
+        </div>
+
+        <div class="line-item__meta">
+          <div class="line-item__title">
+            ${lineItem.title}
+          </div>
+
+          <div class="line-item__price-container">
+            ${lineItem.quantity}x ${price}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Request line item data from GraphQL is incomplete data.
+   * @param {Object} lineItem the line item to request.
+   */
+  function requestLineItemData(lineItem) {
 
   }
 
