@@ -134,8 +134,8 @@ export default () => {
    */
   function lineItemTemplate(lineItem) {
     let type = 'loading';
-    let price = `<div class="loading"></div>`;
     let image = `<div class="loading"></div>`;
+    let price = `<div class="loading"></div>`;
 
     if (lineItem.completeData) {
       type = 'complete';

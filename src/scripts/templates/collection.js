@@ -49,6 +49,8 @@ export default () => {
       return;
     }
 
+    renderLoadingTemplate();
+
     graphql().getCollectionByHandle(handle, 5)
       .then((response) => {
         if (response) {
@@ -64,6 +66,36 @@ export default () => {
   }
 
   /**
+   * Render the loading state template.
+   */
+  function renderLoadingTemplate() {
+    let html = '';
+    let width = 75;
+
+    for (let step = 0; step < 4; step++) {
+      width = ((Math.random() * 100) + 50);
+      width = (width > 100) ? 90 : width;
+
+      html += `
+        <div class="product-card">
+          <div class="product-card__image-container">
+            <div class="loading"></div>
+          </div>
+
+          <div class="product-card__footer">
+            <div class="product-card__title h2" style="width: ${width}%">
+              <div class="loading"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    nodeSelectors.homepage.innerHTML = html;
+    nodeSelectors.homepage.classList.add('is-active');
+  }
+
+  /**
    * Render collection of products.
    * @param {String} handle the handle of the collection render.
    */
@@ -75,9 +107,9 @@ export default () => {
     const html = collectionProducts.map((product) => {
       return `
         <div class="product-card" js-page="productCard">
-          <div class="product-card__image">
+          <div class="product-card__image-container">
             <img
-              class="product-page__image"
+              class="product-card__image"
               alt="${product.images[0].altText}"
               src="${product.images[0].smallImage}"
               srcset="
@@ -88,7 +120,7 @@ export default () => {
           </div>
 
           <div class="product-card__footer">
-            <h2>${product.title}</h2>
+            <h2 class="product-card__title">${product.title}</h2>
 
             <button
               class="button button--alt button--outline"

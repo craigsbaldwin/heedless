@@ -52,10 +52,16 @@ export default () => {
    * @param {String} handle the product handle to render.
    */
   function openProductPage(handle) {
-    if (Heedless.products && Heedless.products[handle] && Heedless.products[handle].completeData) {
-      window.console.log('Cached Product Page');
-      renderProduct(handle);
-      return;
+    if (Heedless.products && Heedless.products[handle]) {
+      if (Heedless.products[handle].completeData) {
+        window.console.log('Cached Product Page');
+        renderProduct(handle);
+        return;
+      }
+
+      nodeSelectors.productPage.innerHTML = productTemplate(Heedless.products[handle]);
+      nodeSelectors.homepage.classList.remove('is-active');
+      nodeSelectors.productPage.classList.add('is-active');
     }
 
     graphql().getProductByHandle(handle)
@@ -94,22 +100,17 @@ export default () => {
    * @returns {HTML} the product template.
    */
   function productTemplate(product) {
-    return `
-      <div class="product-page__breadcrumbs breadcrumbs">
-        <a
-          class="breadcrumbs__breadcrumb breadcrumbs__breadcrumb--link"
-          href="javascript:void(0)"
-          js-page="closeProduct"
-        >
-          Home
-        </a>
+    let type = 'loading';
+    let image = '<div class="loading"></div>';
+    let description = '<div class="loading"></div>';
+    let price = '<div class="loading"></div>';
+    let variants = '<div class="loading"></div>';
+    let addToCart = '<div class="loading"></div>';
 
-        <span class="breadcrumbs__breadcrumb">
-          ${product.title}
-        </span>
-      </div>
+    if (product.completeData) {
+      type = 'complete';
 
-      <div class="product-page__image-container">
+      image = `
         <img
           class="product-page__image"
           alt="${product.images[0].altText}"
@@ -120,23 +121,19 @@ export default () => {
             ${product.images[0].largeImage} 900w",
           sizes="auto"
         >
-      </div>
+      `;
 
-      <div class="product-page__meta">
-        <h1 class="product-page__title">${product.title}</h1>
+      description = product.descriptionHtml;
 
-        <div class="product-page__description">${product.descriptionHtml}</div>
+      price = `<strong class="product-page__price">${formatMoney(product.variants[0].price)}</strong>`;
 
-        <strong class="product-page__price" js-product="price">
-          ${formatMoney(product.variants[0].price)}
-        </strong>
+      variants = `
+        <select name="id" js-product="variantSelector">
+          ${renderVariants(product.variants)}
+        </select>
+      `;
 
-        <div class="product-page__variants">
-          <select name="id" js-product="variantSelector">
-            ${renderVariants(product.variants)}
-          </select>
-        </div>
-
+      addToCart = `
         <button
           class="button button--large"
           data-id="${product.variants[0].id}"
@@ -144,6 +141,48 @@ export default () => {
         >
           Add To Cart
         </button>
+      `;
+    }
+
+    return `
+      <div class="product-page__container product-page--${type}">
+        <div class="product-page__breadcrumbs breadcrumbs">
+          <a
+            class="breadcrumbs__breadcrumb breadcrumbs__breadcrumb--link"
+            href="javascript:void(0)"
+            js-page="closeProduct"
+          >
+            Home
+          </a>
+
+          <span class="breadcrumbs__breadcrumb">
+            ${product.title}
+          </span>
+        </div>
+
+        <div class="product-page__image-container">
+          ${image}
+        </div>
+
+        <div class="product-page__meta">
+          <h1 class="product-page__title">${product.title}</h1>
+
+          <div class="product-page__description">
+            ${description}
+          </div>
+
+          <div class="product-page__price-container" js-product="price">
+            ${price}
+          </div>
+
+          <div class="product-page__variants">
+            ${variants}
+          </div>
+
+          <div class="product-page__button-container">
+            ${addToCart}
+          </div>
+        </div>
       </div>
     `;
   }
@@ -183,7 +222,7 @@ export default () => {
     const price = formatMoney(selectedOption.getAttribute('data-price'));
 
     nodeSelectors.productPage.querySelector(selectors.addToCartButton).setAttribute('data-id', selectedOption.value);
-    nodeSelectors.productPage.querySelector(selectors.price).innerText = price;
+    nodeSelectors.productPage.querySelector(selectors.price).innerText = `<strong class="product-page__price">${price}</strong>`;
   }
 
   /**
