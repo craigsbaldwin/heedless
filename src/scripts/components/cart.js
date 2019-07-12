@@ -164,6 +164,7 @@ export default () => {
    */
   function handleCartUpdate(checkout) {
     let counter = 0;
+    let cost = 0;
     let lineItems = [];
 
     /**
@@ -171,12 +172,14 @@ export default () => {
      */
     lineItems = checkout.lineItems.edges.map((lineItem) => {
       counter += lineItem.node.quantity;
+      cost += (Number(lineItem.node.variant.priceV2.amount) * lineItem.node.quantity);
 
       return {
-        id: lineItem.node.id,
-        variantId: lineItem.node.variant.id,
         quantity: lineItem.node.quantity,
+        price: lineItem.node.variant.priceV2.amount,
         title: lineItem.node.title,
+        variantId: lineItem.node.variant.id,
+        variantTitle: lineItem.node.variant.title,
       };
     });
 
@@ -186,6 +189,7 @@ export default () => {
     const cart = Cookies.getJSON('cart');
 
     cart.totalCount = counter;
+    cart.totalCost = cost;
     cart.lineItems = lineItems;
 
     Cookies.set('cart', cart);

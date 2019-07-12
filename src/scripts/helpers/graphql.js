@@ -80,9 +80,12 @@ export default () => {
                 node {
                   variant {
                     id
+                    title
+                    priceV2 {
+                      amount
+                    }
                   }
                   quantity
-                  id
                   title
                 }
               }
@@ -191,7 +194,7 @@ export default () => {
           resolve(checkout);
         })
         .catch((error) => {
-          return error;
+          window.console.log('createCheckout Error', error);
         });
     });
   }
@@ -228,10 +231,10 @@ export default () => {
         .then((response) => response.json())
         .then((response) => {
           let lineItems = [];
-          const edges = response.data.checkoutAttributesUpdateV2.checkout.lineItems.edges;
+          const checkout = response.data.checkoutAttributesUpdateV2.checkout.lineItems.edges;
 
-          if (edges.length > 0) {
-            lineItems = edges.map((lineItem) => {
+          if (checkout.length > 0) {
+            lineItems = checkout.map((lineItem) => {
               return {
                 variantId: lineItem.node.variant.id,
                 quantity: lineItem.node.quantity,
@@ -242,7 +245,7 @@ export default () => {
           resolve(lineItems);
         })
         .catch((error) => {
-          return error;
+          window.console.log('getCart Error', error);
         });
     });
   }
@@ -277,7 +280,7 @@ export default () => {
           resolve(response);
         })
         .catch((error) => {
-          return error;
+          window.console.log('replaceCart Error', error);
         });
     });
   }
@@ -305,7 +308,7 @@ export default () => {
           resolve(convertGetCollectionResponse(collection));
         })
         .catch((error) => {
-          return error;
+          window.console.log('getCollectionByHandle Error', error);
         });
     });
   }
@@ -359,7 +362,7 @@ export default () => {
           resolve(convertGetProductResponse(product));
         })
         .catch((error) => {
-          return error;
+          window.console.log('getProductByHandle Error', error);
         });
     });
   }

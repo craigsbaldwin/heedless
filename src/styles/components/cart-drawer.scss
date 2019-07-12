@@ -1,7 +1,7 @@
 .cart-drawer {
   align-content: space-between;
   background-color: $COLOR_WHITE;
-  box-shadow: 0 0 10px rgba($COLOR_CONCRETE, 0.5);
+  box-shadow: $BOX_SHADOW;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -13,18 +13,40 @@
   width: 400px;
   z-index: 5;
 
-  &__container {
+  &__header {
+    align-items: center;
+    display: flex;
+    font-size: 18px;
+    justify-content: space-between;
+    padding: $GUTTER;
+  }
+
+  &__line-items {
     flex: 1 1 auto;
-    padding: 20px;
+    padding: $GUTTER;
+    padding-top: 0;
   }
 
   &__line-item {
-    margin-bottom: ($GUTTER / 2);
+    margin-bottom: $GUTTER;
   }
 
   &__footer {
+    display: none;
     flex: 0 0 auto;
-    padding: 20px;
+    padding: $GUTTER;
+
+    &.is-active {
+      display: block;
+    }
+  }
+
+  &__total {
+    align-items: center;
+    display: flex;
+    font-size: 18px;
+    justify-content: space-between;
+    padding-bottom: ($GUTTER / 2);
   }
 
   &.is-active {

@@ -116,10 +116,10 @@ export default () => {
           alt="${product.images[0].altText}"
           src="${imageParameters(product.images[0].originalSrc, {size: '300x'})}"
           srcset="
-            ${imageParameters(product.images[0].originalSrc, {size: '300x'})} 300w,
-            ${imageParameters(product.images[0].originalSrc, {size: '600x'})} 600w",
-            ${imageParameters(product.images[0].originalSrc, {size: '900x'})} 900w",
-            ${imageParameters(product.images[0].originalSrc, {size: '1200x'})} 1200w",
+            ${imageParameters(product.images[0].originalSrc, {size: '500x'})} 300w,
+            ${imageParameters(product.images[0].originalSrc, {size: '800x'})} 600w",
+            ${imageParameters(product.images[0].originalSrc, {size: '1200x'})} 900w",
+            ${imageParameters(product.images[0].originalSrc, {size: '1500x'})} 1200w",
           sizes="auto"
         >
       `;

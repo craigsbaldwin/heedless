@@ -31,9 +31,7 @@
 
   &__variant-title {
     display: inline-block;
-    height: 14px;
     position: relative;
-    width: 30px;
   }
 
   &__price-container {
@@ -45,6 +43,11 @@
    * Loading states.
    */
   &#{&}--loading {
+    #{$parent}__variant-title {
+      height: 14px;
+      width: 30px;
+    }
+
     #{$parent}__price-container {
       height: 14px;
       width: 90px;

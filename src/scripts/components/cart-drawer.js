@@ -10,15 +10,18 @@
 import Cookies from 'js-cookie';
 import _merge from 'lodash.merge';
 
-import {formatMoney, imageParameters} from '../helpers/utils';
+import {on, formatMoney, imageParameters} from '../helpers/utils';
 
 /**
  * DOM selectors.
  */
 const selectors = {
   overlay: '[js-page="overlay"]',
-  cartDrawer: '[js-cart="drawer"]',
-  cartProducts: '[js-cart="products"]',
+  drawer: '[js-cart="drawer"]',
+  close: '[js-cart="close"]',
+  lineItems: '[js-cart="lineItems"]',
+  footer: '[js-cart="footer"]',
+  total: '[js-cart="total"]',
 };
 
 export default () => {
@@ -28,8 +31,11 @@ export default () => {
    */
   const nodeSelectors = {
     overlay: document.querySelector(selectors.overlay),
-    cartDrawer: document.querySelector(selectors.cartDrawer),
-    cartProducts: document.querySelector(selectors.cartProducts),
+    drawer: document.querySelector(selectors.drawer),
+    close: document.querySelector(selectors.close),
+    lineItems: document.querySelector(selectors.lineItems),
+    footer: document.querySelector(selectors.footer),
+    total: document.querySelector(selectors.total),
   };
 
   /**
@@ -46,6 +52,10 @@ export default () => {
     Heedless.eventBus.listen('Cart:updated', () => renderDrawer());
     Heedless.eventBus.listen('Cart:openDrawer', () => openDrawer());
     Heedless.eventBus.listen(['Cart:closeDrawer', 'Overlay:close'], () => closeDrawer());
+
+    on('click', nodeSelectors.close, () => {
+      Heedless.eventBus.emit('Cart:closeDrawer');
+    });
   }
 
   /**
@@ -54,7 +64,7 @@ export default () => {
   function openDrawer() {
     renderDrawer();
 
-    nodeSelectors.cartDrawer.classList.add('is-active');
+    nodeSelectors.drawer.classList.add('is-active');
     nodeSelectors.overlay.classList.add('is-active');
   }
 
@@ -62,7 +72,7 @@ export default () => {
    * Close the cart drawer.
    */
   function closeDrawer() {
-    nodeSelectors.cartDrawer.classList.remove('is-active');
+    nodeSelectors.drawer.classList.remove('is-active');
     nodeSelectors.overlay.classList.remove('is-active');
   }
 
@@ -73,7 +83,8 @@ export default () => {
     const cart = Cookies.getJSON('cart');
 
     if (!cart.lineItems) {
-      nodeSelectors.cartProducts.innerHTML = '<p>No products</p>';
+      nodeSelectors.lineItems.innerHTML = '<p>No products</p>';
+      nodeSelectors.footer.classList.remove('is-active');
       return;
     }
 
@@ -84,7 +95,9 @@ export default () => {
       return lineItemTemplate(lineItem);
     }).join('');
 
-    nodeSelectors.cartProducts.innerHTML = html;
+    nodeSelectors.lineItems.innerHTML = html;
+    nodeSelectors.footer.classList.add('is-active');
+    nodeSelectors.total.innerText = formatMoney(cart.totalCost);
 
     /**
      * Render loaded state.
@@ -96,7 +109,7 @@ export default () => {
       }
 
       /**
-       * Find matching product and variant in storage.
+       * Find matching product in storage.
        */
       const matchingProduct = Object.values(Heedless.products).find((product) => {
         return (product.variants && product.variants.some((variant) => variant.id === lineItem.variantId));
@@ -107,21 +120,15 @@ export default () => {
         return;
       }
 
-      const matchingVariant = matchingProduct.variants.find((variant) => {
-        return (variant.id === lineItem.variantId);
-      });
-
       /**
        * Create combined line item data.
        */
       const combinedLineItem = _merge(lineItem, matchingProduct);
-      combinedLineItem.price = matchingVariant.price;
-      combinedLineItem.variantTitle = matchingVariant.title;
 
       /**
        * Render using this data and replace existing.
        */
-      const oldLineItem = nodeSelectors.cartProducts.querySelector(`[data-variant-id="${lineItem.variantId}"]`);
+      const oldLineItem = nodeSelectors.lineItems.querySelector(`[data-variant-id="${lineItem.variantId}"]`);
       const newLineItem = document.createElement('div');
       newLineItem.innerHTML = lineItemTemplate(combinedLineItem);
       oldLineItem.parentNode.replaceChild(newLineItem, oldLineItem);
@@ -136,8 +143,6 @@ export default () => {
   function lineItemTemplate(lineItem) {
     let type = 'loading';
     let image = `<div class="loading"></div>`;
-    let variantTitle = `<div class="loading"></div>`;
-    let price = `<div class="loading"></div>`;
 
     if (lineItem.completeData) {
       type = 'complete';
@@ -155,10 +160,6 @@ export default () => {
           sizes="auto"
         >
       `;
-
-      variantTitle = `– ${lineItem.variantTitle}`;
-
-      price = `<span class="line-item__price">${formatMoney(lineItem.price)}</span>`;
     }
 
     return `
@@ -175,12 +176,12 @@ export default () => {
             ${lineItem.title}
 
             <span class="line-item__variant-title">
-              ${variantTitle}
+              – ${lineItem.variantTitle}
             </span>
           </div>
 
           <div class="line-item__price-container">
-            ${lineItem.quantity}x ${price}
+            ${lineItem.quantity}x ${formatMoney(lineItem.price)}
           </div>
         </div>
       </div>
@@ -192,7 +193,7 @@ export default () => {
    * @param {Object} lineItem the line item to request.
    */
   function requestLineItemData(lineItem) {
-
+    window.console.log('Data please', lineItem);
   }
 
   return Object.freeze({

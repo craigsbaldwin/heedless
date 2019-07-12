@@ -29,10 +29,20 @@
     </div>
 
     <div class="cart-drawer" js-cart="drawer">
-      <div class="cart-drawer__container" js-cart="products">
+      <div class="cart-drawer__header">
+        <span class="cart-drawer__title">Your cart</span>
+
+        <button class="cart-drawer__close button" js-cart="close">Close</button>
       </div>
 
-      <div class="cart-drawer__footer">
+      <div class="cart-drawer__line-items" js-cart="lineItems"></div>
+
+      <div class="cart-drawer__footer" js-cart="footer">
+        <div class="cart-drawer__total">
+          <span>Total:</span>
+          <span class="cart-drawer__total-value" js-cart="total">£0.00</span>
+        </div>
+
         <a
           class="header__checkout button button--large button--wide"
           href="/"
