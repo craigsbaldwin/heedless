@@ -29,6 +29,13 @@
     position: relative;
   }
 
+  &__variant-title {
+    display: inline-block;
+    height: 14px;
+    position: relative;
+    width: 30px;
+  }
+
   &__price-container {
     font-size: 12px;
     position: relative;

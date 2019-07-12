@@ -116,6 +116,7 @@ export default () => {
        */
       const combinedLineItem = _merge(lineItem, matchingProduct);
       combinedLineItem.price = matchingVariant.price;
+      combinedLineItem.variantTitle = matchingVariant.title;
 
       /**
        * Render using this data and replace existing.
@@ -135,6 +136,7 @@ export default () => {
   function lineItemTemplate(lineItem) {
     let type = 'loading';
     let image = `<div class="loading"></div>`;
+    let variantTitle = `<div class="loading"></div>`;
     let price = `<div class="loading"></div>`;
 
     if (lineItem.completeData) {
@@ -154,6 +156,8 @@ export default () => {
         >
       `;
 
+      variantTitle = `– ${lineItem.variantTitle}`;
+
       price = `<span class="line-item__price">${formatMoney(lineItem.price)}</span>`;
     }
 
@@ -169,6 +173,10 @@ export default () => {
         <div class="line-item__meta">
           <div class="line-item__title">
             ${lineItem.title}
+
+            <span class="line-item__variant-title">
+              ${variantTitle}
+            </span>
           </div>
 
           <div class="line-item__price-container">
