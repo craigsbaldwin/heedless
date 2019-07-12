@@ -53,6 +53,21 @@
     position: relative;
   }
 
+  &__quantity-selector {
+    margin-bottom: ($GUTTER / 2);
+    min-width: 150px;
+  }
+
+  &__error {
+    color: $COLOR_RED;
+    display: none;
+    margin-bottom: ($GUTTER / 2);
+
+    &.is-active {
+      display: block;
+    }
+  }
+
   &__button-container {
     position: relative;
   }

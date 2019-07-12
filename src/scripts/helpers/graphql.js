@@ -113,6 +113,7 @@ export default () => {
           products(first: ${limit}) {
             edges {
               node {
+                id
                 title
                 handle
                 images(first: 1) {
@@ -146,6 +147,7 @@ export default () => {
     return `
       {
         productByHandle(handle: "${handle}") {
+          id
           title
           handle
           descriptionHtml
@@ -328,6 +330,7 @@ export default () => {
       });
 
       convertedResponse[product.node.handle] = {
+        id: product.node.id,
         title: product.node.title,
         handle: product.node.handle,
         images: product.node.images.edges.map((image) => {
@@ -375,6 +378,7 @@ export default () => {
     const convertedResponse = {};
 
     convertedResponse[response.handle] = {
+      id: response.id,
       title: response.title,
       handle: response.handle,
       images: response.images.edges.map((image) => {

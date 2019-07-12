@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // Cache images using PWA
 // Quantity selector
 // Inventory limits to quantity selectors
-// Render cart (with no local storage)
+// Render cart images (with no local storage)
 // Create global page thing to manage history
 // Use existing image for loading state of product, blur it, fade in high res
+
+// Rebuild product page, product.js renders page, product-form.js renders form and handles requests for inventory and variants

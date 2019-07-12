@@ -15,9 +15,11 @@
 
   &__header {
     align-items: center;
+    border-bottom: 1px solid $COLOR_CLOUDS;
     display: flex;
     font-size: 18px;
     justify-content: space-between;
+    margin-bottom: $GUTTER;
     padding: $GUTTER;
   }
 

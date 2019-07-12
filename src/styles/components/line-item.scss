@@ -38,19 +38,4 @@
     font-size: 12px;
     position: relative;
   }
-
-  /**
-   * Loading states.
-   */
-  &#{&}--loading {
-    #{$parent}__variant-title {
-      height: 14px;
-      width: 30px;
-    }
-
-    #{$parent}__price-container {
-      height: 14px;
-      width: 90px;
-    }
-  }
 }

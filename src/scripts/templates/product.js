@@ -6,6 +6,7 @@
  * @namespace product
  *
  */
+import axios from 'axios';
 
 import graphql from '../helpers/graphql';
 import {on, formatMoney, imageParameters} from '../helpers/utils';
@@ -18,6 +19,8 @@ const selectors = {
   productPage: '[js-page="productPage"]',
   price: '[js-product="price"]',
   variantSelector: '[js-product="variantSelector"]',
+  quantity: '[js-product="quantity"]',
+  quantityError: '[js-product="quantityError"]',
   addToCartButton: '[js-page="addToCart"]',
 };
 
@@ -53,6 +56,8 @@ export default () => {
    */
   function openProductPage(handle) {
     if (Heedless.products && Heedless.products[handle]) {
+      loadProductInventory(Heedless.products[handle].id);
+
       if (Heedless.products[handle].completeData) {
         window.console.log('Cached Product Page');
         renderProduct(handle);
@@ -180,6 +185,20 @@ export default () => {
             ${variants}
           </div>
 
+          <div class="product-page__quantity-selector quantity-selector">
+            <input
+              class="quantity-selector__input"
+              min="1"
+              type="number"
+              value="1"
+              js-product="quantity"
+            >
+          </div>
+
+          <p class="product-page__error u-small-text" js-product="quantityError">
+            Product limit reached
+          </p>
+
           <div class="product-page__button-container">
             ${addToCart}
           </div>
@@ -205,11 +224,43 @@ export default () => {
   }
 
   /**
+   * Load product's variant inventory.
+   * @param {String} id the product ID.
+   */
+  function loadProductInventory(id) {
+    axios.get(`https://stacklet.azurewebsites.net/api/inventory-levels/location-inventory?product_id=${id}`)
+      .then((response) => {
+        const inventoryLevels = response.data.variants.edges.map((variant) => {
+          return {
+            id: window.btoa(variant.node.id),
+            inventory: variant.node.inventoryQuantity,
+          }
+        });
+
+        updateVariantInventory(inventoryLevels);
+      })
+      .catch((error) => {
+        window.console.log('loadProductInventory error', error);
+      });
+  }
+
+  /**
+   * Updates the variant selectors
+   */
+  function updateVariantInventory(inventoryLevels) {
+
+  }
+
+  /**
    * Set event listeners which only work on render.
    */
   function setRenderedEventListeners() {
     on('change', nodeSelectors.productPage.querySelector(selectors.variantSelector), (event) => {
       handleVariantChange(event.target);
+    });
+
+    on('change', nodeSelectors.productPage.querySelector(selectors.quantity), (event) => {
+      handleQuantityChange(event.target);
     });
   }
 
@@ -224,6 +275,14 @@ export default () => {
 
     nodeSelectors.productPage.querySelector(selectors.addToCartButton).setAttribute('data-id', selectedOption.value);
     nodeSelectors.productPage.querySelector(selectors.price).innerHTML = `<strong class="product-page__price">${price}</strong>`;
+  }
+
+  /**
+   * Handle variant select change.
+   * @param {HTMLObject} target the changed select.
+   */
+  function handleQuantityChange(target) {
+    console.log('quantity', target.value);
   }
 
   /**
