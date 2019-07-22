@@ -1,0 +1,13 @@
+.result {
+  $parent: &;
+  align-items: center;
+  display: flex;
+  height: 100px;
+
+  #{$parent}--loading {
+    #{$parent}__image-container {
+      height: 100px;
+      width: 100px;
+    }
+  }
+}

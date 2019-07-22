@@ -22,4 +22,8 @@
     align-items: center;
     display: flex;
   }
+
+  &__search {
+    margin-right: ($GUTTER / 2);
+  }
 }

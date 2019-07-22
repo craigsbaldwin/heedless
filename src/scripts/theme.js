@@ -8,9 +8,9 @@ import '../styles/theme.scss';
 
 import collection from './templates/collection';
 import product from './templates/product';
-
 import cart from './components/cart';
 import cartDrawer from './components/cart-drawer';
+import search from './components/search';
 
 import eventBus from './helpers/event-bus';
 import events from './helpers/events';
@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
   product().init();
   storage().init();
   events().init();
+  search().init();
 });
 
 // Cache images using PWA

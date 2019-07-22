@@ -8,7 +8,7 @@
  */
 
 import Cookies from 'js-cookie';
-import _merge from 'lodash.merge';
+import merge from 'lodash-es/merge';
 
 import {on, formatMoney, imageParameters} from '../helpers/utils';
 
@@ -123,7 +123,7 @@ export default () => {
       /**
        * Create combined line item data.
        */
-      const combinedLineItem = _merge(lineItem, matchingProduct);
+      const combinedLineItem = merge(lineItem, matchingProduct);
 
       /**
        * Render using this data and replace existing.

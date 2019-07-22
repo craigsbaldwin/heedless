@@ -1,0 +1,31 @@
+.search {
+  min-width: 200px;
+  position: relative;
+
+  &__input {
+    border: 0;
+    box-shadow:
+      inset 0 0 5px 0 rgba($COLOR_CONCRETE, 0.1),
+      inset 0 0 1px 1px $COLOR_GREY;
+    padding: ($GUTTER / 3) ($GUTTER / 2);
+    min-width: 200px;
+  }
+
+  &__results {
+    box-shadow: $BOX_SHADOW;
+    display: none;
+    left: 0;
+    position: absolute;
+    text-align: center;
+    top: 100%;
+    width: 100%;
+
+    &.is-active {
+      display: block;
+    }
+  }
+
+  &.is-active {
+    min-width: 300px;
+  }
+}

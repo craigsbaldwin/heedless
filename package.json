@@ -16,7 +16,6 @@
     "extract-loader": "^3.1.0",
     "file-loader": "^4.0.0",
     "html-webpack-plugin": "^3.2.0",
-    "lodash.merge": "^4.6.2",
     "mini-css-extract-plugin": "^0.7.0",
     "node-sass": "^4.12.0",
     "path": "^0.12.7",
@@ -30,6 +29,7 @@
   "dependencies": {
     "js-cookie": "^2.2.0",
     "lodash": "^4.17.11",
+    "lodash-es": "^4.17.15",
     "node-fetch": "^2.6.0",
     "workbox": "^0.0.0",
     "workbox-expiration": "^4.3.1",
