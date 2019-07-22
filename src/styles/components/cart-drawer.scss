@@ -20,7 +20,7 @@
     font-size: 18px;
     justify-content: space-between;
     margin-bottom: $GUTTER;
-    padding: $GUTTER;
+    padding: ($GUTTER / 2) $GUTTER;
   }
 
   &__line-items {

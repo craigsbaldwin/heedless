@@ -119,10 +119,11 @@ export default () => {
    * @param {HTMLElement} target the clicked button (has data attributes).
    */
   function handleAddToCartClick(target) {
-    const variantId = target.getAttribute('data-id');
+    const {quantity, variantId} = target.dataset;
+
     const lineItem = {
       variantId,
-      quantity: 1,
+      quantity: Number(quantity) || 1,
     };
 
     target.innerText = 'Adding';

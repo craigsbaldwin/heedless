@@ -1,6 +1,6 @@
 .header {
   box-shadow: $BOX_SHADOW;
-  padding: 20px 0;
+  padding: ($GUTTER / 2) 0;
   width: 100%;
 
   &__container {

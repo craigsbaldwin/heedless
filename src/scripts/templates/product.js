@@ -6,10 +6,9 @@
  * @namespace product
  *
  */
-import axios from 'axios';
-
 import graphql from '../helpers/graphql';
-import {on, formatMoney, imageParameters} from '../helpers/utils';
+import productForm from '../components/product-form';
+import {formatMoney, imageParameters} from '../helpers/utils';
 
 /**
  * DOM selectors.
@@ -17,13 +16,11 @@ import {on, formatMoney, imageParameters} from '../helpers/utils';
 const selectors = {
   homepage: '[js-page="homepage"]',
   productPage: '[js-page="productPage"]',
-  price: '[js-product="price"]',
-  variantSelector: '[js-product="variantSelector"]',
-  quantity: '[js-product="quantity"]',
-  quantityError: '[js-product="quantityError"]',
-  addToCartButton: '[js-page="addToCart"]',
 };
 
+/**
+ * Create new product object.
+ */
 export default () => {
 
   /**
@@ -47,7 +44,6 @@ export default () => {
   function setEventListeners() {
     Heedless.eventBus.listen('Product:open', (response) => openProductPage(response));
     Heedless.eventBus.listen('Product:close', () => closeProductPage());
-    Heedless.eventBus.listen('Cart:updated', () => resetAddToCartButton());
   }
 
   /**
@@ -55,15 +51,27 @@ export default () => {
    * @param {String} handle the product handle to render.
    */
   function openProductPage(handle) {
-    if (Heedless.products && Heedless.products[handle]) {
-      loadProductInventory(Heedless.products[handle].id);
+    window.handle = handle;
 
-      if (Heedless.products[handle].completeData) {
+    if (Heedless.products && Heedless.products[handle]) {
+
+      /**
+       * If full data stored then render from storage.
+       */
+      if (Heedless.products[handle].fullRender) {
         window.console.log('Cached Product Page');
         renderProduct(handle);
+
+        /**
+         * Always update inventory data.
+         */
+        productForm().loadProductInventory(Heedless.products[handle]);
         return;
       }
 
+      /**
+       * If no full data show loading template.
+       */
       nodeSelectors.productPage.innerHTML = productTemplate(Heedless.products[handle]);
       nodeSelectors.homepage.classList.remove('is-active');
       nodeSelectors.productPage.classList.add('is-active');
@@ -72,8 +80,9 @@ export default () => {
     graphql().getProductByHandle(handle)
       .then((response) => {
         if (response) {
-          Heedless.eventBus.emit('Storage:updated', response);
+          Heedless.eventBus.emit('Storage:update', response);
           renderProduct(handle);
+          productForm().loadProductInventory(Heedless.products[handle]);
           return;
         }
 
@@ -96,7 +105,7 @@ export default () => {
     nodeSelectors.homepage.classList.remove('is-active');
     nodeSelectors.productPage.classList.add('is-active');
 
-    setRenderedEventListeners();
+    productForm().init();
   }
 
   /**
@@ -112,7 +121,7 @@ export default () => {
     let variants = '<div class="loading"></div>';
     let addToCart = '<div class="loading"></div>';
 
-    if (product.completeData) {
+    if (product.fullRender) {
       type = 'complete';
 
       image = `
@@ -142,7 +151,8 @@ export default () => {
       addToCart = `
         <button
           class="button button--large"
-          data-id="${product.variants[0].id}"
+          data-variant-id="${product.variants[0].id}"
+          data-quantity="1"
           js-page="addToCart"
         >
           Add To Cart
@@ -214,75 +224,17 @@ export default () => {
   function renderVariants(variants) {
     const html = variants.map((variant) => {
       return `
-        <option value="${variant.id}" data-price="${variant.price}">
+        <option
+          value="${variant.id}"
+          ${(variant.inventory) ? `data-inventory="${variant.inventory}"` : ''}
+          data-price="${variant.price}"
+        >
           ${variant.title} - ${formatMoney(variant.price)}
         </option>
       `;
     }).join('');
 
     return html;
-  }
-
-  /**
-   * Load product's variant inventory.
-   * @param {String} id the product ID.
-   */
-  function loadProductInventory(id) {
-    axios.get(`https://stacklet.azurewebsites.net/api/inventory-levels/location-inventory?product_id=${id}`)
-      .then((response) => {
-        const inventoryLevels = response.data.variants.edges.map((variant) => {
-          return {
-            id: window.btoa(variant.node.id),
-            inventory: variant.node.inventoryQuantity,
-          }
-        });
-
-        updateVariantInventory(inventoryLevels);
-      })
-      .catch((error) => {
-        window.console.log('loadProductInventory error', error);
-      });
-  }
-
-  /**
-   * Updates the variant selectors
-   */
-  function updateVariantInventory(inventoryLevels) {
-
-  }
-
-  /**
-   * Set event listeners which only work on render.
-   */
-  function setRenderedEventListeners() {
-    on('change', nodeSelectors.productPage.querySelector(selectors.variantSelector), (event) => {
-      handleVariantChange(event.target);
-    });
-
-    on('change', nodeSelectors.productPage.querySelector(selectors.quantity), (event) => {
-      handleQuantityChange(event.target);
-    });
-  }
-
-  /**
-   * Handle variant select change.
-   * @param {HTMLObject} target the changed select.
-   */
-  function handleVariantChange(target) {
-    const selectedOption = target.querySelector(`[value="${target.value}"]`);
-
-    const price = formatMoney(selectedOption.getAttribute('data-price'));
-
-    nodeSelectors.productPage.querySelector(selectors.addToCartButton).setAttribute('data-id', selectedOption.value);
-    nodeSelectors.productPage.querySelector(selectors.price).innerHTML = `<strong class="product-page__price">${price}</strong>`;
-  }
-
-  /**
-   * Handle variant select change.
-   * @param {HTMLObject} target the changed select.
-   */
-  function handleQuantityChange(target) {
-    console.log('quantity', target.value);
   }
 
   /**
@@ -293,21 +245,6 @@ export default () => {
     Heedless.events.updateHistory('Homepage', '/');
 
     nodeSelectors.productPage.classList.remove('is-active');
-  }
-
-  /**
-   * Resets the add to cart button.
-   */
-  function resetAddToCartButton() {
-    const addToCartButton = nodeSelectors.productPage.querySelector(selectors.addToCartButton);
-
-    addToCartButton.classList.remove('is-disabled');
-    addToCartButton.innerText = 'Added to Cart';
-    Heedless.eventBus.emit('Cart:openDrawer');
-
-    window.setTimeout(() => {
-      addToCartButton.innerText = 'Add to Cart';
-    }, 2500);
   }
 
   return Object.freeze({

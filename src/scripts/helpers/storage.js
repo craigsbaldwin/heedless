@@ -20,7 +20,7 @@ export default() => {
   }
 
   function setEventListeners() {
-    Heedless.eventBus.listen('Storage:updated', (response) => storeData(response));
+    Heedless.eventBus.listen('Storage:update', (response) => storeData(response));
     Heedless.eventBus.listen('Storage:newCollection', (response) => storeCollection(response));
   }
 
@@ -30,6 +30,9 @@ export default() => {
    */
   function storeData(response) {
     const currentStorage = JSON.parse(localStorage.getItem('products'));
+    const event = response.event;
+
+    delete response.event;
 
     if (currentStorage) {
       Heedless.products = _merge(currentStorage, response);
@@ -38,8 +41,18 @@ export default() => {
     }
 
     localStorage.setItem('products', JSON.stringify(Heedless.products));
+
+    Heedless.eventBus.emit('Storage:updated');
+
+    if (event) {
+      Heedless.eventBus.emit(`Storage:${event}`);
+    }
   }
 
+  /**
+   * Store that the collection has been loaded to localStorage.
+   * @param {String} handle the collection handle.
+   */
   function storeCollection(handle) {
     const currentStorage = localStorage.getItem('collections');
     let array = [];
@@ -56,6 +69,7 @@ export default() => {
     Heedless.collections = array;
 
     localStorage.setItem('collections', JSON.stringify(Heedless.collections));
+    Heedless.eventBus.emit('Storage:updated');
   }
 
   return Object.freeze({

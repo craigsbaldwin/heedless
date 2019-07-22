@@ -115,7 +115,7 @@ export default () => {
         return (product.variants && product.variants.some((variant) => variant.id === lineItem.variantId));
       });
 
-      if (!matchingProduct || !matchingProduct.completeData) {
+      if (!matchingProduct || !matchingProduct.fullRender) {
         requestLineItemData(lineItem);
         return;
       }
@@ -144,7 +144,7 @@ export default () => {
     let type = 'loading';
     let image = `<div class="loading"></div>`;
 
-    if (lineItem.completeData) {
+    if (lineItem.fullRender) {
       type = 'complete';
 
       image = `

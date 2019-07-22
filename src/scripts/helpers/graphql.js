@@ -392,7 +392,7 @@ export default () => {
           price: variant.node.priceV2.amount,
         };
       }),
-      completeData: true,
+      fullRender: true,
     };
 
     return convertedResponse;

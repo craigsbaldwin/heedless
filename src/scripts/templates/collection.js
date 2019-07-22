@@ -55,7 +55,7 @@ export default () => {
     graphql().getCollectionByHandle(handle, 5)
       .then((response) => {
         if (response) {
-          Heedless.eventBus.emit('Storage:updated', response);
+          Heedless.eventBus.emit('Storage:update', response);
           Heedless.eventBus.emit('Storage:newCollection', handle);
           renderProducts(handle);
           return;
