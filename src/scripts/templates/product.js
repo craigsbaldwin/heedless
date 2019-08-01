@@ -8,6 +8,7 @@
  */
 import graphql from '../helpers/graphql';
 import productForm from '../components/product-form';
+import cssClasses from '../helpers/cssClasses';
 import {formatMoney, imageParameters} from '../helpers/utils';
 
 /**
@@ -73,8 +74,8 @@ export default () => {
        * If no full data show loading template.
        */
       nodeSelectors.productPage.innerHTML = productTemplate(Heedless.products[handle]);
-      nodeSelectors.homepage.classList.remove('is-active');
-      nodeSelectors.productPage.classList.add('is-active');
+      nodeSelectors.homepage.classList.remove(cssClasses.active);
+      nodeSelectors.productPage.classList.add(cssClasses.active);
     }
 
     graphql().getProductByHandle(handle)
@@ -102,8 +103,8 @@ export default () => {
     Heedless.events.updateHistory(product.title, url);
 
     nodeSelectors.productPage.innerHTML = productTemplate(product);
-    nodeSelectors.homepage.classList.remove('is-active');
-    nodeSelectors.productPage.classList.add('is-active');
+    nodeSelectors.homepage.classList.remove(cssClasses.active);
+    nodeSelectors.productPage.classList.add(cssClasses.active);
 
     productForm().init();
   }
@@ -244,7 +245,7 @@ export default () => {
     Heedless.eventBus.emit('Collection:open', 'frontpage');
     Heedless.events.updateHistory('Homepage', '/');
 
-    nodeSelectors.productPage.classList.remove('is-active');
+    nodeSelectors.productPage.classList.remove(cssClasses.active);
   }
 
   return Object.freeze({

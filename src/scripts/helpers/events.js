@@ -6,6 +6,7 @@
  * @namespace events
  *
  */
+import cssClasses from '../helpers/cssClasses';
 import {on} from './utils';
 
 /**
@@ -127,7 +128,7 @@ export default () => {
     };
 
     target.innerText = 'Adding';
-    target.classList.add('is-disabled');
+    target.classList.add(cssClasses.disabled);
     Heedless.eventBus.emit('Cart:addToCart', lineItem);
   }
 
@@ -135,7 +136,7 @@ export default () => {
    * Close the overlay.
    */
   function closeOverlay() {
-    nodeSelectors.overlay.classList.remove('is-active');
+    nodeSelectors.overlay.classList.remove(cssClasses.active);
   }
 
   /**
@@ -143,7 +144,7 @@ export default () => {
    */
   function handleHomeClick() {
     nodeSelectors.page.forEach((page) => {
-      page.classList.remove('is-active');
+      page.classList.remove(cssClasses.active);
     });
 
     Heedless.events.updateHistory('Homepage', '/');

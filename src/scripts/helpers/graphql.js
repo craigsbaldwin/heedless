@@ -466,7 +466,7 @@ export default () => {
       return {
         handle: product.node.handle,
         title: product.node.title,
-        image: product.node.images.edges.map((image) => {
+        images: product.node.images.edges.map((image) => {
           return image.node;
         }),
         price: product.node.priceRange.minVariantPrice.amount,

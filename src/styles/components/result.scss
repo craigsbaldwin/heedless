@@ -1,13 +1,52 @@
 .result {
   $parent: &;
   align-items: center;
+  cursor: pointer;
   display: flex;
-  height: 100px;
 
-  #{$parent}--loading {
-    #{$parent}__image-container {
-      height: 100px;
-      width: 100px;
+  &:not(:last-child) {
+    border-bottom: 1px solid $COLOR_CLOUDS;
+    margin-bottom: ($GUTTER / 2);
+    padding-bottom: ($GUTTER / 2);
+  }
+
+  &__image-container {
+    height: 50px;
+    position: relative;
+    width: 50px;
+  }
+
+  &__image {
+    height: 100%;
+    left: 0;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  &__meta {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: ($GUTTER / 2);
+  }
+
+  &__title-container,
+  &__title {
+    margin-bottom: ($GUTTER / 4);
+  }
+
+  &#{&}--loading {
+    #{$parent}__title-container {
+      height: 16px;
+      width: 100%;
+    }
+
+    #{$parent}__price-container {
+      height: 14px;
+      width: 38px;
     }
   }
 }

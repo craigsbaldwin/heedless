@@ -7,6 +7,7 @@
  *
  */
 import graphql from '../helpers/graphql';
+import cssClasses from '../helpers/cssClasses';
 import {imageParameters} from '../helpers/utils';
 
 /**
@@ -93,7 +94,7 @@ export default () => {
     }
 
     nodeSelectors.homepage.innerHTML = html;
-    nodeSelectors.homepage.classList.add('is-active');
+    nodeSelectors.homepage.classList.add(cssClasses.active);
   }
 
   /**
@@ -138,7 +139,7 @@ export default () => {
     }).join('');
 
     nodeSelectors.homepage.innerHTML = html;
-    nodeSelectors.homepage.classList.add('is-active');
+    nodeSelectors.homepage.classList.add(cssClasses.active);
   }
 
   return Object.freeze({

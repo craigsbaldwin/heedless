@@ -1,5 +1,6 @@
 .search {
-  min-width: 200px;
+  $parent: &;
+  min-width: 250px;
   position: relative;
 
   &__input {
@@ -8,17 +9,20 @@
       inset 0 0 5px 0 rgba($COLOR_CONCRETE, 0.1),
       inset 0 0 1px 1px $COLOR_GREY;
     padding: ($GUTTER / 3) ($GUTTER / 2);
-    min-width: 200px;
+    width: 100%;
   }
 
   &__results {
+    background-color: $COLOR_WHITE;
     box-shadow: $BOX_SHADOW;
     display: none;
     left: 0;
+    padding: ($GUTTER / 2);
     position: absolute;
     text-align: center;
     top: 100%;
     width: 100%;
+    z-index: 10;
 
     &.is-active {
       display: block;

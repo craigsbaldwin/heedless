@@ -10,6 +10,7 @@
 import Cookies from 'js-cookie';
 import merge from 'lodash-es/merge';
 
+import cssClasses from '../helpers/cssClasses';
 import {on, formatMoney, imageParameters} from '../helpers/utils';
 
 /**
@@ -64,16 +65,16 @@ export default () => {
   function openDrawer() {
     renderDrawer();
 
-    nodeSelectors.drawer.classList.add('is-active');
-    nodeSelectors.overlay.classList.add('is-active');
+    nodeSelectors.drawer.classList.add(cssClasses.active);
+    nodeSelectors.overlay.classList.add(cssClasses.active);
   }
 
   /**
    * Close the cart drawer.
    */
   function closeDrawer() {
-    nodeSelectors.drawer.classList.remove('is-active');
-    nodeSelectors.overlay.classList.remove('is-active');
+    nodeSelectors.drawer.classList.remove(cssClasses.active);
+    nodeSelectors.overlay.classList.remove(cssClasses.active);
   }
 
   /**
@@ -84,7 +85,7 @@ export default () => {
 
     if (!cart.lineItems) {
       nodeSelectors.lineItems.innerHTML = '<p>No products</p>';
-      nodeSelectors.footer.classList.remove('is-active');
+      nodeSelectors.footer.classList.remove(cssClasses.active);
       return;
     }
 
@@ -96,7 +97,7 @@ export default () => {
     }).join('');
 
     nodeSelectors.lineItems.innerHTML = html;
-    nodeSelectors.footer.classList.add('is-active');
+    nodeSelectors.footer.classList.add(cssClasses.active);
     nodeSelectors.total.innerText = formatMoney(cart.totalCost);
 
     /**

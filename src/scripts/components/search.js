@@ -7,8 +7,9 @@
  */
 import throttle from 'lodash-es/throttle';
 
-import {on, imageParameters, formatMoney} from '../helpers/utils';
+import cssClasses from '../helpers/cssClasses';
 import graphql from '../helpers/graphql';
+import {on, imageParameters, formatMoney} from '../helpers/utils';
 
 /**
  * DOM selectors.
@@ -18,20 +19,23 @@ const selectors = {
   searchResults: '[js-search="results"]',
 };
 
+/**
+ * Base loading template.
+ */
 const loading = `
   <div class="search__result result result--loading">
-    <div class="result__image-container">
+    <div class="result__image-container loading-container">
       <div class="loading">
       </div>
     </div>
 
     <div class="result__meta">
-      <div class="result__title-container">
+      <div class="result__title-container loading-container">
         <div class="loading">
         </div>
       </div>
 
-      <div class="result__price-container">
+      <div class="result__price-container loading-container">
         <div class="loading">
         </div>
       </div>
@@ -63,19 +67,50 @@ export default () => {
    * Set event listeners which only work on render.
    */
   function setEventListeners() {
-    on('input', nodeSelectors.searchInput, throttle((event) => {
-      // handleSearch(event.target);
+    on('input', nodeSelectors.searchInput, throttle((event) => handleSearchInput(event), 1000));
+    on('focus', nodeSelectors.searchInput, (event) => handleSearchInput(event));
+    on('blur', nodeSelectors.searchInput, () => closeSearch());
+  }
+
+  /**
+   * Handle search input when typing and clicking search box.
+   * @param {Event} event the input event.
+   */
+  function handleSearchInput(event) {
+    const searchString = event.target.value;
+
+    if (searchString.length === 0) {
+      closeSearch();
+      return;
+    }
+
+    openSearch();
+
+    if (event.type === 'input') {
+      handleSearch(searchString);
       renderLoading();
-    }, 1000));
+    }
+  }
+
+  /**
+   * Open the search.
+   */
+  function openSearch() {
+    nodeSelectors.searchResults.classList.add(cssClasses.active);
+  }
+
+  /**
+   * Close the search.
+   */
+  function closeSearch() {
+    nodeSelectors.searchResults.classList.remove(cssClasses.active);
   }
 
   /**
    * Handles search entry.
-   * @param {HTMLElement} target the search input.
+   * @param {String} searchString the search string.
    */
-  function handleSearch(target) {
-    const searchString = target.value;
-
+  function handleSearch(searchString) {
     graphql().getProductBySearchString(searchString)
       .then((response) => {
         if (response) {
@@ -88,18 +123,20 @@ export default () => {
       .catch((error) => error);
   }
 
+  /**
+   * Render the loading state.
+   */
   function renderLoading() {
-    console.log('hello');
-    nodeSelectors.searchResults.classList.add('is-active');
-
-    nodeSelectors.searchResults.innerHTML = loading + loading + loading;
+    nodeSelectors.searchResults.innerHTML = (loading + loading + loading);
   }
 
+  /**
+   * Render the actual search results.
+   * @param {Object} response the search response.
+   */
   function renderSearchResults(response) {
-    nodeSelectors.searchResults.classList.add('is-active');
-
     if (response.length === 0) {
-      nodeSelectors.searchResults.innerHTML = `<p>No results</p>`;
+      nodeSelectors.searchResults.innerHTML = `<p class="u-small-text>No results</p>`;
       return;
     }
 
@@ -119,12 +156,17 @@ export default () => {
           </div>
 
           <div class="result__meta">
-            <span class="result__title">${product.title}</span>
-            <span class="result__price">${formatMoney(product.price)}</span>
+            <span class="result__title h2 text-left">
+              ${product.title}
+            </span>
+
+            <span class="result__price u-small-text text-left">
+              ${formatMoney(product.price)}
+            </span>
           </div>
         </div>
       `;
-    });
+    }).join('');
 
     nodeSelectors.searchResults.innerHTML = html;
   }

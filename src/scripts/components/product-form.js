@@ -7,6 +7,7 @@
  */
 import axios from 'axios';
 
+import cssClasses from '../helpers/cssClasses';
 import {on, formatMoney} from '../helpers/utils';
 
 /**
@@ -135,11 +136,11 @@ export default () => {
     nodeSelectors.productPage.querySelector(selectors.addToCartButton).setAttribute('data-quantity', target.value);
 
     if (target.value === target.getAttribute('max')) {
-      nodeSelectors.productPage.querySelector(selectors.quantityError).classList.add('is-active');
+      nodeSelectors.productPage.querySelector(selectors.quantityError).classList.add(cssClasses.active);
       return;
     }
 
-    nodeSelectors.productPage.querySelector(selectors.quantityError).classList.remove('is-active');
+    nodeSelectors.productPage.querySelector(selectors.quantityError).classList.remove(cssClasses.active);
   }
 
   /**
@@ -156,9 +157,9 @@ export default () => {
 
     if (quantity > inventory) {
       quantityElement.value = inventory;
-      nodeSelectors.productPage.querySelector(selectors.quantityError).classList.add('is-active');
+      nodeSelectors.productPage.querySelector(selectors.quantityError).classList.add(cssClasses.active);
     } else {
-      nodeSelectors.productPage.querySelector(selectors.quantityError).classList.remove('is-active');
+      nodeSelectors.productPage.querySelector(selectors.quantityError).classList.remove(cssClasses.active);
     }
   }
 
@@ -168,7 +169,7 @@ export default () => {
   function resetAddToCartButton() {
     const addToCartButton = nodeSelectors.productPage.querySelector(selectors.addToCartButton);
 
-    addToCartButton.classList.remove('is-disabled');
+    addToCartButton.classList.remove(cssClasses.disabled);
     addToCartButton.innerText = 'Added to Cart';
     Heedless.eventBus.emit('Cart:openDrawer');
 
