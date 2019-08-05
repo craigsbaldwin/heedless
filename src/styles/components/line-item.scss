@@ -1,0 +1,41 @@
+.line-item {
+  $parent: &;
+  display: flex;
+  width: 100%;
+
+  &__image-container {
+    flex: 0 0 100px;
+    height: 100px;
+    position: relative;
+    width: 100px;
+  }
+
+  &__image {
+    height: 100px;
+    object-fit: cover;
+    width: 100px;
+  }
+
+  &__meta {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: ($GUTTER / 2);
+  }
+
+  &__title {
+    margin-bottom: ($GUTTER / 4);
+    position: relative;
+  }
+
+  &__variant-title {
+    display: inline-block;
+    position: relative;
+  }
+
+  &__price-container {
+    font-size: 12px;
+    position: relative;
+  }
+}

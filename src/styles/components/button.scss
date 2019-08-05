@@ -1,0 +1,43 @@
+.button {
+  appearance: none;
+  background-color: $COLOR_GREEN;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 11px;
+  padding: ($GUTTER / 3) ($GUTTER / 2);
+  text-align: center;
+  text-decoration: none;
+
+  &#{&}--large {
+    font-size: 14px;
+    padding: 15px 30px;
+    min-width: 150px;
+  }
+
+  &#{&}--wide {
+    display: block;
+  }
+
+  + .button {
+    margin-top: 10px;
+  }
+
+  &:hover {
+    background-color: $COLOR_GREEN_DARK;
+  }
+
+  &#{&}--alt {
+    background-color: $COLOR_CONCRETE;
+
+    &:hover {
+      background-color: $COLOR_CONCRETE_DARK;
+    }
+  }
+
+  &.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}

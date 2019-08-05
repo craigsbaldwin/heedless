@@ -1,0 +1,26 @@
+.breadcrumbs {
+  color: $COLOR_CONCRETE_DARK;
+  font-size: 12px;
+
+  &__breadcrumb {
+    color: $COLOR_CONCRETE_DARK;
+    position: relative;
+    text-decoration: none;
+
+    &:not(:last-child) {
+      padding-right: $GUTTER;
+
+      &::after {
+        content: '>';
+        position: absolute;
+        right: 10px;
+        top: -1px;
+      }
+    }
+
+    &#{&}--link {
+      color: $COLOR_CONCRETE;
+      font-weight: bold;
+    }
+  }
+}

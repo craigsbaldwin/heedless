@@ -1,108 +1,57 @@
-const path = require('path')
+// Configured using https://github.com/fransyrcc/starter-html-sass-js-webpack/blob/master/webpack.config.js
 
-const { VueLoaderPlugin } = require('vue-loader')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = (env, argv) => ({
-  mode: argv && argv.mode || 'development',
-  devtool: (argv && argv.mode || 'development') === 'production' ? 'source-map' : 'eval',
+const config = {
+  mode: 'development',
+  context: path.join(__dirname, 'src'),
 
-  entry: './src/main.js',
-
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'assets/[name].js'
+  entry: {
+    theme: './scripts/theme.js',
   },
 
-  node: false,
+  output: {
+    filename: 'assets/[name].js',
+    path: path.join(__dirname, 'dist'),
+  },
 
   module: {
     rules: [
       {
-        test: /\.vue$/,
-        loader: 'vue-loader'
-      },
-      {
-        test: /\.js$/,
-        loader: 'babel-loader'
-      },
-      {
         test: /\.scss$/,
-        use: [
-          {
-            loader: "style-loader" // creates style nodes from JS strings
-          },
-          {
-            loader: "css-loader" // translates CSS into CommonJS
-          },
-          {
-            loader: "sass-loader" // compiles Sass to CSS
-          }
-        ]
+        use: ['style-loader', MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
       }
     ]
   },
 
-  resolve: {
-    extensions: [
-      '.js',
-      '.vue',
-      '.json'
-    ],
-    alias: {
-      'vue$': 'vue/dist/vue.esm.js',
-      '@': path.resolve(__dirname, 'src')
-    }
-  },
-
   plugins: [
-    new CleanWebpackPlugin(),
-    new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'static', 'index.html'),
-      inject: true
+      inject: true,
+      hash: false,
+      filename: 'index.html',
+      template: path.resolve(__dirname, 'src', 'index.html')
     }),
-    new CopyWebpackPlugin([{
-      from: path.resolve(__dirname, 'static'),
-      to: path.resolve(__dirname, 'dist'),
-      toType: 'dir'
-    }])
+    new MiniCssExtractPlugin({
+      filename: 'assets/[name].css',
+    }),
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, 'src', 'pwa'),
+        to: path.resolve(__dirname, 'dist', 'assets'),
+        toType: 'dir',
+      },
+    ]),
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, 'src', 'images'),
+        to: path.resolve(__dirname, 'dist', 'assets/images'),
+        toType: 'dir',
+      },
+    ])
   ],
+};
 
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-      minSize: 30000,
-      maxSize: 0,
-      cacheGroups: {
-        vendors: {
-          test: /[\\/]node_modules[\\/]/,
-          priority: -10
-        },
-        default: {
-          minChunks: 2,
-          priority: -20,
-          reuseExistingChunk: true
-        }
-      }
-    },
-    runtimeChunk: {
-      name: entrypoint => `runtime~${entrypoint.name}`
-    },
-    mangleWasmImports: true,
-    removeAvailableModules: true,
-    removeEmptyChunks: true,
-    mergeDuplicateChunks: true
-  },
-
-  devServer: {
-    compress: true,
-    host: 'localhost',
-    https: true,
-    open: true,
-    overlay: true,
-    port: 9000
-  }
-});
+module.exports = config;

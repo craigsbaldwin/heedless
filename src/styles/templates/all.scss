@@ -1,0 +1,25 @@
+.site-width {
+  margin: 0 auto;
+  max-width: 1200px;
+  position: relative;
+  width: 90%;
+}
+
+.container {
+  padding: 40px 0;
+}
+
+.overlay {
+  background-color: rgba($COLOR_WHITE, 0.85);
+  display: none;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 2;
+
+  &.is-active {
+    display: block;
+  }
+}

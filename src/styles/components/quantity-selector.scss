@@ -1,0 +1,7 @@
+.quantity-selector {
+  &__input {
+    font-size: 14px;
+    padding: ($GUTTER / 4) ($GUTTER / 2);
+    width: 150px;
+  }
+}

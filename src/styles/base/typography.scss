@@ -1,0 +1,27 @@
+h1, .h1 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: ($GUTTER / 2);
+}
+
+h2, .h2 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: ($GUTTER / 2);
+}
+
+.u-small-text {
+  font-size: 12px;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
