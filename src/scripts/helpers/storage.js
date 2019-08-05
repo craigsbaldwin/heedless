@@ -6,7 +6,7 @@
  * @namespace storage
  *
  */
-import _merge from 'lodash.merge';
+import _merge from 'lodash-es/merge';
 
 export default() => {
 
@@ -22,6 +22,7 @@ export default() => {
   function setEventListeners() {
     Heedless.eventBus.listen('Storage:update', (response) => storeData(response));
     Heedless.eventBus.listen('Storage:newCollection', (response) => storeCollection(response));
+    Heedless.eventBus.listen('Storage:shipping', (response) => storeShipping(response));
   }
 
   /**
@@ -72,6 +73,18 @@ export default() => {
     Heedless.eventBus.emit('Storage:updated');
   }
 
+  /**
+   * Store that the collection has been loaded to localStorage.
+   * @param {String} handle the collection handle.
+   */
+  function storeShipping(countries) {
+    Heedless.shipping = countries;
+    localStorage.setItem('shipping', JSON.stringify(Heedless.shipping));
+  }
+
+  /**
+   * Expose public interface.
+   */
   return Object.freeze({
     init,
   });

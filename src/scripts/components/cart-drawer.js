@@ -1,28 +1,27 @@
 /**
- * Cart Drawer
+ * Cart Drawer.
  * ------------------------------------------------------------------------------
  * Creates cart drawer and listens for events.
  *
  * @namespace cartDrawer
  *
  */
-
 import Cookies from 'js-cookie';
 import merge from 'lodash-es/merge';
 
 import cssClasses from '../helpers/cssClasses';
+import graphqlCheckout from '../graphql/checkout';
 import {on, formatMoney, imageParameters} from '../helpers/utils';
 
 /**
  * DOM selectors.
  */
 const selectors = {
-  overlay: '[js-page="overlay"]',
-  drawer: '[js-cart="drawer"]',
   close: '[js-cart="close"]',
   lineItems: '[js-cart="lineItems"]',
   footer: '[js-cart="footer"]',
   total: '[js-cart="total"]',
+  checkout: '[js-cart="checkout"]',
 };
 
 export default () => {
@@ -31,12 +30,10 @@ export default () => {
    * DOM node selectors.
    */
   const nodeSelectors = {
-    overlay: document.querySelector(selectors.overlay),
-    drawer: document.querySelector(selectors.drawer),
-    close: document.querySelector(selectors.close),
     lineItems: document.querySelector(selectors.lineItems),
     footer: document.querySelector(selectors.footer),
     total: document.querySelector(selectors.total),
+    checkout: document.querySelector(selectors.checkout),
   };
 
   /**
@@ -50,31 +47,9 @@ export default () => {
    * Set listeners.
    */
   function setEventListeners() {
-    Heedless.eventBus.listen('Cart:updated', () => renderDrawer());
-    Heedless.eventBus.listen('Cart:openDrawer', () => openDrawer());
-    Heedless.eventBus.listen(['Cart:closeDrawer', 'Overlay:close'], () => closeDrawer());
+    Heedless.eventBus.listen(['Cart:updated', 'Cart:render'], () => renderDrawer());
 
-    on('click', nodeSelectors.close, () => {
-      Heedless.eventBus.emit('Cart:closeDrawer');
-    });
-  }
-
-  /**
-   * Open the cart drawer.
-   */
-  function openDrawer() {
-    renderDrawer();
-
-    nodeSelectors.drawer.classList.add(cssClasses.active);
-    nodeSelectors.overlay.classList.add(cssClasses.active);
-  }
-
-  /**
-   * Close the cart drawer.
-   */
-  function closeDrawer() {
-    nodeSelectors.drawer.classList.remove(cssClasses.active);
-    nodeSelectors.overlay.classList.remove(cssClasses.active);
+    on('click', nodeSelectors.checkout, () => handleCheckoutClick());
   }
 
   /**
@@ -198,6 +173,34 @@ export default () => {
     window.console.log('Data please', lineItem);
   }
 
+  /**
+   * Handle checkout click.
+   */
+  function handleCheckoutClick() {
+    Heedless.eventBus.emit('Drawer:open', 'checkout');
+
+    if (Heedless.shipping && Heedless.shipping.length > 0) {
+      window.console.log('Cached Shipping');
+      Heedless.eventBus.emit('Checkout:updateShipping', Heedless.shipping);
+      return;
+    }
+
+    graphqlCheckout().getShipsToCountries()
+      .then((response) => {
+        if (response) {
+          Heedless.eventBus.emit('Checkout:updateShipping', response);
+          Heedless.eventBus.emit('Storage:shipping', response);
+          return;
+        }
+
+        throw new Error('Response not found');
+      })
+      .catch((error) => error);
+  }
+
+  /**
+   * Expose public interface.,
+   */
   return Object.freeze({
     init,
   });

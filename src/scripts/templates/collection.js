@@ -6,7 +6,7 @@
  * @namespace collection
  *
  */
-import graphql from '../helpers/graphql';
+import graphqlProducts from '../graphql/products';
 import cssClasses from '../helpers/cssClasses';
 import {imageParameters} from '../helpers/utils';
 
@@ -53,7 +53,7 @@ export default () => {
 
     renderLoadingTemplate();
 
-    graphql().getCollectionByHandle(handle, 5)
+    graphqlProducts().getCollectionByHandle(handle, 4)
       .then((response) => {
         if (response) {
           Heedless.eventBus.emit('Storage:update', response);

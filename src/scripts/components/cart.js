@@ -1,5 +1,5 @@
 /**
- * Cart
+ * Component: Cart.
  * ------------------------------------------------------------------------------
  * Creates cart and interacts with cart.
  *
@@ -8,7 +8,8 @@
  */
 import Cookies from 'js-cookie';
 
-import graphql from '../helpers/graphql';
+import graphqlCart from '../graphql/cart';
+import graphqlCheckout from '../graphql/checkout';
 
 /**
  * DOM selectors.
@@ -59,7 +60,7 @@ export default () => {
       return;
     }
 
-    graphql().createCheckout()
+    graphqlCheckout().createCheckout()
       .then((response) => {
         if (response) {
           const cartCookie = {
@@ -83,7 +84,7 @@ export default () => {
    * @param {Object} lineItem line item object to add `{variantId: [variantId], quantity: [quantity]}`.
    */
   function addToCart(lineItem) {
-    graphql().getCart()
+    graphqlCart().getCart()
       .then((response) => {
         if (response) {
           let alreadyInCart = false;
@@ -124,7 +125,7 @@ export default () => {
    * @param {Array} lineItems array of line items.
    */
   function replaceCheckoutLineItems(lineItems) {
-    graphql().replaceCart(lineItems)
+    graphqlCart().replaceCart(lineItems)
       .then((response) => {
         if (response) {
           const cart = response.data.checkoutLineItemsReplace.checkout;
@@ -217,6 +218,9 @@ export default () => {
     return Cookies.getJSON('cart');
   }
 
+  /**
+   * Expose public interface.,
+   */
   return Object.freeze({
     init,
     addToCart,

@@ -8,7 +8,7 @@
 import debounce from 'lodash-es/debounce';
 
 import cssClasses from '../helpers/cssClasses';
-import graphql from '../helpers/graphql';
+import graphqlProducts from '../graphql/products';
 import {on, imageParameters, formatMoney} from '../helpers/utils';
 
 /**
@@ -119,7 +119,7 @@ export default () => {
    * @param {String} searchString the search string.
    */
   function handleSearch(searchString) {
-    graphql().getProductBySearchString(searchString)
+    graphqlProducts().getProductBySearchString(searchString)
       .then((response) => {
         if (response) {
           renderSearchResults(response);

@@ -6,10 +6,12 @@
  */
 import '../styles/theme.scss';
 
-import collection from './templates/collection';
-import product from './templates/product';
 import cart from './components/cart';
 import cartDrawer from './components/cart-drawer';
+import checkoutDrawer from './components/checkout-drawer';
+import collection from './templates/collection';
+import drawers from './components/drawers';
+import product from './templates/product';
 import search from './components/search';
 
 import eventBus from './helpers/event-bus';
@@ -22,8 +24,9 @@ import storage from './helpers/storage';
 */
 window.Heedless = window.Heedless || {};
 window.Heedless.eventBus = eventBus();
-window.Heedless.collections = window.Heedless.collections || {};
+window.Heedless.collections = window.Heedless.collections || [];
 window.Heedless.products = window.Heedless.products || {};
+window.Heedless.shipping = window.Heedless.shipping || [];
 window.Heedless.cart = cart();
 window.Heedless.events = events();
 
@@ -41,17 +44,17 @@ if ('serviceWorker' in navigator) {
  */
 document.addEventListener('DOMContentLoaded', () => {
   cart().init();
+  drawers().init();
   cartDrawer().init();
+  checkoutDrawer().init();
+  search().init();
   collection().init();
   product().init();
   storage().init();
   events().init();
-  search().init();
 });
 
 // Cache images using PWA
-// Quantity selector
-// Inventory limits to quantity selectors
 // Render cart images (with no local storage)
 // Create global page thing to manage history
 // Use existing image for loading state of product, blur it, fade in high res

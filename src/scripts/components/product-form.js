@@ -171,7 +171,7 @@ export default () => {
 
     addToCartButton.classList.remove(cssClasses.disabled);
     addToCartButton.innerText = 'Added to Cart';
-    Heedless.eventBus.emit('Cart:openDrawer');
+    Heedless.eventBus.emit('Drawer:open', 'cart');
 
     window.setTimeout(() => {
       addToCartButton.innerText = 'Add to Cart';

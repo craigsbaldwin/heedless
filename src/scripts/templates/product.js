@@ -6,7 +6,7 @@
  * @namespace product
  *
  */
-import graphql from '../helpers/graphql';
+import graphqlProducts from '../graphql/products';
 import productForm from '../components/product-form';
 import cssClasses from '../helpers/cssClasses';
 import {formatMoney, imageParameters} from '../helpers/utils';
@@ -78,7 +78,7 @@ export default () => {
       nodeSelectors.productPage.classList.add(cssClasses.active);
     }
 
-    graphql().getProductByHandle(handle)
+    graphqlProducts().getProductByHandle(handle)
       .then((response) => {
         if (response) {
           Heedless.eventBus.emit('Storage:update', response);

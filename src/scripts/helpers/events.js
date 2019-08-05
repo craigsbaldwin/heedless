@@ -78,11 +78,11 @@ export default () => {
       }
 
       if (isCorrectButton(target, 'toggleCartDrawer')) {
-        Heedless.eventBus.emit('Cart:openDrawer');
+        Heedless.eventBus.emit('Drawer:open', 'cart');
       }
 
       if (isCorrectButton(target, 'overlay')) {
-        Heedless.eventBus.emit('Overlay:close');
+        Heedless.eventBus.emit('Overlay:close', 'cart');
       }
 
       if (isCorrectButton(target, 'home')) {
