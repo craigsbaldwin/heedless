@@ -5,7 +5,7 @@
  *
  * @namespace search
  */
-import throttle from 'lodash-es/throttle';
+import debounce from 'lodash-es/debounce';
 
 import cssClasses from '../helpers/cssClasses';
 import graphql from '../helpers/graphql';
@@ -67,9 +67,9 @@ export default () => {
    * Set event listeners which only work on render.
    */
   function setEventListeners() {
-    on('input', nodeSelectors.searchInput, throttle((event) => handleSearchInput(event), 1000));
+    on('input', nodeSelectors.searchInput, debounce((event) => handleSearchInput(event), 500));
     on('focus', nodeSelectors.searchInput, (event) => handleSearchInput(event));
-    on('blur', nodeSelectors.searchInput, () => closeSearch());
+    // on('blur', nodeSelectors.searchInput, () => closeSearch());
   }
 
   /**
@@ -136,7 +136,7 @@ export default () => {
    */
   function renderSearchResults(response) {
     if (response.length === 0) {
-      nodeSelectors.searchResults.innerHTML = `<p class="u-small-text>No results</p>`;
+      nodeSelectors.searchResults.innerHTML = `<p class="u-small-text">No results</p>`;
       return;
     }
 
