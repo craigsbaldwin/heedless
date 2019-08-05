@@ -1,7 +1,7 @@
 /**
  * Component: Cart.
  * ------------------------------------------------------------------------------
- * Creates cart and interacts with cart.
+ * Creates cart and interacts with cart and handles cookie.
  *
  * @namespace cart
  *
@@ -164,6 +164,19 @@ export default () => {
    * @param {Object} checkout the checkout response from GraphQL.
    */
   function handleCartUpdate(checkout) {
+    if (checkout.lineItems) {
+      updateLineItems(checkout);
+      return;
+    }
+
+    updateDetails(checkout);
+  }
+
+  /**
+   * Update line items in cookie.
+   * @param {Object} checkout the checkout response from GraphQL.
+   */
+  function updateLineItems(checkout) {
     let counter = 0;
     let cost = 0;
     let lineItems = [];
@@ -199,6 +212,15 @@ export default () => {
      * Update counters.
      */
     updateCounter(counter);
+  }
+
+  /**
+   * Update email or shipping details.
+   */
+  function updateDetails(checkout) {
+    const cart = Cookies.getJSON('cart');
+    cart.shipping += checkout;
+    Cookies.set('cart', cart);
   }
 
   /**

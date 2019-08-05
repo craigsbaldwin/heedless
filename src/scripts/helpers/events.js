@@ -155,6 +155,9 @@ export default () => {
     Heedless.eventBus.emit('Collection:open', 'frontpage');
   }
 
+  /**
+   * Expose public interface.
+   */
   return Object.freeze({
     init,
     updateHistory,

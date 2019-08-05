@@ -147,6 +147,9 @@ export default () => {
     nodeSelectors.homepage.classList.add(cssClasses.active);
   }
 
+  /**
+   * Expose public interface.
+   */
   return Object.freeze({
     init,
   });

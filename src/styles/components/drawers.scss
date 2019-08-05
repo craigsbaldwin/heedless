@@ -58,6 +58,29 @@ $DRAWER_WIDTH: 400px;
     margin-bottom: $GUTTER;
   }
 
+  &__label {
+    color: $COLOR_CONCRETE;
+    display: block;
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: ($GUTTER / 4);
+    text-transform: uppercase;
+  }
+
+  &__form-item {
+    appearance: none;
+    background-color: $COLOR_WHITE;
+    border: 1px solid $COLOR_CLOUDS;
+    border-radius: 0;
+    padding: ($GUTTER / 2);
+    position: relative;
+    width: 100%;
+
+    &:not(:last-child) {
+      margin-bottom: ($GUTTER / 2);
+    }
+  }
+
   &__footer {
     display: none;
     flex: 0 0 auto;

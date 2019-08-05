@@ -117,9 +117,29 @@
         </div>
 
         <div class="drawer__content">
-          <select class="drawer__select" js-checkout="countries">
-            <option selected="true">Loading</option>
-          </select>
+          <div class="drawer__form" js-checkout="form">
+            <label class="drawer__label" for="email">
+              Email
+            </label>
+
+            <input
+              id="email"
+              class="drawer__form-item"
+              js-checkout="email"
+            >
+
+            <label class="drawer__label" for="shipping">
+              Country
+            </label>
+
+            <select
+              id="shipping"
+              class="drawer__form-item drawer__select"
+              js-checkout="countries"
+            >
+              <option selected="true">Loading</option>
+            </select>
+          </div>
         </div>
 
         <div class="drawer__footer is-active">

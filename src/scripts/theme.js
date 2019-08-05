@@ -43,14 +43,17 @@ if ('serviceWorker' in navigator) {
  * Document ready.
  */
 document.addEventListener('DOMContentLoaded', () => {
+  storage().init();
+
   cart().init();
   drawers().init();
   cartDrawer().init();
   checkoutDrawer().init();
   search().init();
+
   collection().init();
   product().init();
-  storage().init();
+
   events().init();
 });
 

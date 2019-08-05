@@ -7,4 +7,5 @@
 export default {
   active: 'is-active',
   disabled: 'is-disabled',
+  loading: 'is-loading',
 };

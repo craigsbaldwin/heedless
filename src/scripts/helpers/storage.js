@@ -17,8 +17,12 @@ export default() => {
     setEventListeners();
     Heedless.products = JSON.parse(localStorage.getItem('products')) || {};
     Heedless.collections = JSON.parse(localStorage.getItem('collections')) || [];
+    Heedless.shipping = JSON.parse(localStorage.getItem('shipping')) || [];
   }
 
+  /**
+   * Set event listeners.
+   */
   function setEventListeners() {
     Heedless.eventBus.listen('Storage:update', (response) => storeData(response));
     Heedless.eventBus.listen('Storage:newCollection', (response) => storeCollection(response));

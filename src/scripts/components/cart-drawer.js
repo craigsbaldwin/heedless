@@ -180,8 +180,6 @@ export default () => {
     Heedless.eventBus.emit('Drawer:open', 'checkout');
 
     if (Heedless.shipping && Heedless.shipping.length > 0) {
-      window.console.log('Cached Shipping');
-      Heedless.eventBus.emit('Checkout:updateShipping', Heedless.shipping);
       return;
     }
 

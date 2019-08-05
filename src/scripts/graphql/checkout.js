@@ -7,6 +7,7 @@
  *
  */
 import fetch from 'node-fetch';
+import Cookies from 'js-cookie';
 
 /**
  * Global variables.
@@ -84,7 +85,7 @@ export default () => {
           resolve(countries);
         })
         .catch((error) => {
-          window.console.log('createCheckout Error', error);
+          window.console.log('getShipsToCountries Error', error);
         });
     });
   }
@@ -102,8 +103,65 @@ export default () => {
     `;
   }
 
+  /**
+   * Update email.
+   * @param {String} emailAddress the email address.
+   */
+  function updateEmail(emailAddress) {
+    return new Promise((resolve) => {
+      const cart = JSON.parse(Cookies.get('cart'));
+      const graphQlQuery = updateEmailQuery();
+
+      const query = {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/graphql',
+          'X-Shopify-Storefront-Access-Token': accessToken,
+        },
+        body: JSON.stringify({
+          query: graphQlQuery,
+          variables: {
+            checkoutId: cart.id,
+            email: emailAddress,
+          },
+        }),
+      };
+
+      fetch(`${shopUrl}/api/graphql`, query)
+        .then((response) => response.json())
+        .then((response) => {
+          const checkout = response.data.checkoutEmailUpdateV2.checkout;
+          resolve(checkout);
+        })
+        .catch((error) => {
+          window.console.log('updateEmail Error', error);
+        });
+    });
+  }
+
+  /**
+   * Update email query.
+   */
+  function updateEmailQuery() {
+    return `
+      mutation checkoutEmailUpdateV2($checkoutId: ID!, $email: String!) {
+        checkoutEmailUpdateV2(checkoutId: $checkoutId, email: $email) {
+          checkout {
+            email
+          }
+          checkoutUserErrors {
+            code
+            field
+            message
+          }
+        }
+      }
+    `;
+  }
+
   return Object.freeze({
     createCheckout,
     getShipsToCountries,
+    updateEmail,
   });
 };

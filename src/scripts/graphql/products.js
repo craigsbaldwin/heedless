@@ -279,6 +279,9 @@ export default () => {
     return convertedResponse;
   }
 
+  /**
+   * Expose public interface.
+   */
   return Object.freeze({
     getCollectionByHandle,
     getProductByHandle,
