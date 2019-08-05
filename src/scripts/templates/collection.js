@@ -102,8 +102,13 @@ export default () => {
    * @param {String} handle the handle of the collection render.
    */
   function renderProducts(handle) {
+
+    /**
+     * Go through all loaded products to find
+     * those with matching collection handle.
+     */
     const collectionProducts = Object.values(Heedless.products).filter((product) => {
-      return (product.collections.includes(handle));
+      return (product.collections && product.collections.includes(handle));
     });
 
     const html = collectionProducts.map((product) => {
