@@ -26,6 +26,7 @@ $DRAWER_WIDTH: 400px;
 }
 
 .drawer {
+  $parent: &;
   align-content: space-between;
   background-color: $COLOR_WHITE;
   box-shadow: $BOX_SHADOW;
@@ -70,7 +71,7 @@ $DRAWER_WIDTH: 400px;
   &__form-item {
     appearance: none;
     background-color: $COLOR_WHITE;
-    border: 1px solid $COLOR_CLOUDS;
+    border: 0;
     border-radius: 0;
     padding: ($GUTTER / 2);
     position: relative;
@@ -78,6 +79,11 @@ $DRAWER_WIDTH: 400px;
 
     &:not(:last-child) {
       margin-bottom: ($GUTTER / 2);
+    }
+
+    &.has-error {
+      border: 1px solid $COLOR_RED;
+      color: $COLOR_RED;
     }
   }
 
@@ -100,7 +106,12 @@ $DRAWER_WIDTH: 400px;
   }
 
   &#{&}--checkout {
+    background-color: $COLOR_CLOUDS;
     left: $DRAWER_WIDTH;
     z-index: 1;
+
+    #{$parent}__header {
+      border-bottom-color: $COLOR_WHITE;
+    }
   }
 }

@@ -1,0 +1,26 @@
+mutation checkoutLineItemsReplace($checkoutId: ID!, $lineItems: [CheckoutLineItemInput!]!) {
+  checkoutLineItemsReplace(checkoutId: $checkoutId, lineItems: $lineItems) {
+    checkout {
+      lineItems(first: 20) {
+        edges {
+          node {
+            variant {
+              id
+              title
+              priceV2 {
+                amount
+              }
+            }
+            quantity
+            title
+          }
+        }
+      }
+    }
+    userErrors {
+      code
+      field
+      message
+    }
+  }
+}

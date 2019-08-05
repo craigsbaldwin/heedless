@@ -9,6 +9,10 @@
 import fetch from 'node-fetch';
 import Cookies from 'js-cookie';
 
+import checkoutCreate from './queries/checkoutCreate.graphql';
+import shipsToCountries from './queries/shipsToCountries.graphql';
+import checkoutEmailUpdateV2 from './queries/checkoutEmailUpdateV2.graphql';
+
 /**
  * Global variables.
  */
@@ -28,7 +32,7 @@ export default () => {
           'Content-Type': 'application/graphql',
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
-        body: createCheckoutQuery(),
+        body: checkoutCreate,
       };
 
       fetch(`${shopUrl}/api/graphql`, query)
@@ -44,27 +48,6 @@ export default () => {
   }
 
   /**
-   * Create checkout query.
-   */
-  function createCheckoutQuery() {
-    return `
-      mutation {
-        checkoutCreate(input: {}) {
-          checkout {
-            id
-            webUrl
-          }
-          checkoutUserErrors {
-            code
-            field
-            message
-          }
-        }
-      }
-    `;
-  }
-
-  /**
    * Get ships to countries.
    */
   function getShipsToCountries() {
@@ -75,7 +58,7 @@ export default () => {
           'Content-Type': 'application/graphql',
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
-        body: getShipsToCountriesQuery(),
+        body: shipsToCountries,
       };
 
       fetch(`${shopUrl}/api/graphql`, query)
@@ -91,26 +74,13 @@ export default () => {
   }
 
   /**
-   * Get ships to countries query.
-   */
-  function getShipsToCountriesQuery() {
-    return `
-      {
-        shop {
-          shipsToCountries
-        }
-      }
-    `;
-  }
-
-  /**
    * Update email.
    * @param {String} emailAddress the email address.
    */
   function updateEmail(emailAddress) {
     return new Promise((resolve) => {
       const cart = JSON.parse(Cookies.get('cart'));
-      const graphQlQuery = updateEmailQuery();
+      const graphQlQuery = checkoutEmailUpdateV2;
 
       const query = {
         method: 'post',
@@ -127,36 +97,23 @@ export default () => {
         }),
       };
 
+      console.log('query', query);
+
       fetch(`${shopUrl}/api/graphql`, query)
         .then((response) => response.json())
         .then((response) => {
+          if (response.errors) {
+            throw new Error(response.errors[0].message);
+          }
+
           const checkout = response.data.checkoutEmailUpdateV2.checkout;
+          console.log('response', response);
           resolve(checkout);
         })
         .catch((error) => {
-          window.console.log('updateEmail Error', error);
+          window.console.log('updateEmail', error);
         });
     });
-  }
-
-  /**
-   * Update email query.
-   */
-  function updateEmailQuery() {
-    return `
-      mutation checkoutEmailUpdateV2($checkoutId: ID!, $email: String!) {
-        checkoutEmailUpdateV2(checkoutId: $checkoutId, email: $email) {
-          checkout {
-            email
-          }
-          checkoutUserErrors {
-            code
-            field
-            message
-          }
-        }
-      }
-    `;
   }
 
   return Object.freeze({

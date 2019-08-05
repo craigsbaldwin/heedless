@@ -1,0 +1,23 @@
+query ($searchString: String!) {
+  products(first: 3, query: $searchString) {
+    edges {
+      node {
+        handle
+        title
+        images(first: 1) {
+          edges {
+            node {
+              originalSrc
+              altText
+            }
+          }
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+          }
+        }
+      }
+    }
+  }
+}

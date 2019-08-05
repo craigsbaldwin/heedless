@@ -17,6 +17,7 @@ import {on} from '../helpers/utils';
  */
 const selectors = {
   countries: '[js-checkout="countries"]',
+  required: '[js-form="required"]',
   email: '[js-checkout="email"]',
   checkoutLink: '[js-checkout="link"]',
 };
@@ -28,6 +29,7 @@ export default () => {
    */
   const nodeSelectors = {
     countries: document.querySelector(selectors.countries),
+    required: [...document.querySelectorAll(selectors.required)],
     email: document.querySelector(selectors.email),
     checkoutLink: document.querySelector(selectors.checkoutLink),
   };
@@ -68,14 +70,37 @@ export default () => {
 
   function handleCheckoutClick(event) {
     event.preventDefault();
-    event.target.classList.add(cssClasses.loading);
+    let errors = false;
 
+    nodeSelectors.required.forEach((element) => {
+      if (element.value !== '') {
+        element.classList.remove(cssClasses.error);
+        return;
+      }
+
+      element.classList.add(cssClasses.error);
+      errors = true;
+    });
+
+    if (errors) {
+      return;
+    }
+
+    event.target.classList.add(cssClasses.disabled);
+    event.target.innerText = 'Saving';
+
+    updateDetails();
+  }
+
+  /**
+   * Update checkout details from form.
+   */
+  function updateDetails() {
     const email = nodeSelectors.email.value;
 
     graphqlCheckout().updateEmail(email)
       .then((response) => {
         if (response) {
-          console.log('response', response);
           Heedless.emit('Cart:updated', response);
           return;
         }
@@ -95,7 +120,7 @@ export default () => {
 
     const cart = Cookies.getJSON('cart');
 
-    if (cart.address) {
+    if (cart && cart.address) {
       Object.keys(cart.address).forEach((key) => {
         nodeSelectors[key].value = cart.address[key];
       });

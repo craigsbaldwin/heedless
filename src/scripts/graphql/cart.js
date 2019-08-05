@@ -9,6 +9,9 @@
 import fetch from 'node-fetch';
 import Cookies from 'js-cookie';
 
+import checkoutAttributesUpdateV2 from './queries/checkoutAttributesUpdateV2.graphql';
+import checkoutLineItemsReplace from './queries/checkoutLineItemsReplace.graphql';
+
 /**
  * Global variables.
  */
@@ -23,7 +26,6 @@ export default () => {
   function getCart() {
     return new Promise((resolve) => {
       const cart = JSON.parse(Cookies.get('cart'));
-      const graphQlQuery = getCartQuery();
 
       const query = {
         method: 'post',
@@ -32,7 +34,7 @@ export default () => {
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
         body: JSON.stringify({
-          query: graphQlQuery,
+          query: checkoutAttributesUpdateV2,
           variables: {
             checkoutId: cart.id,
             input: {
@@ -48,6 +50,10 @@ export default () => {
       fetch(`${shopUrl}/api/graphql`, query)
         .then((response) => response.json())
         .then((response) => {
+          if (response.errors) {
+            throw new Error(response.errors[0].message);
+          }
+
           let lineItems = [];
           const checkout = response.data.checkoutAttributesUpdateV2.checkout.lineItems.edges;
 
@@ -63,38 +69,9 @@ export default () => {
           resolve(lineItems);
         })
         .catch((error) => {
-          window.console.log('getCart Error', error);
+          window.console.log('getCart', error);
         });
     });
-  }
-
-  /**
-   * Check line items in cart (adapted mutation).
-   */
-  function getCartQuery() {
-    return `
-      mutation checkoutAttributesUpdateV2($checkoutId: ID!, $input: CheckoutAttributesUpdateV2Input!) {
-        checkoutAttributesUpdateV2(checkoutId: $checkoutId, input: $input) {
-          checkout {
-            lineItems(first: 20) {
-              edges {
-                node {
-                  variant {
-                    id
-                  }
-                  quantity
-                }
-              }
-            }
-          }
-          checkoutUserErrors {
-            code
-            field
-            message
-          }
-        }
-      }
-    `;
   }
 
   /**
@@ -104,7 +81,6 @@ export default () => {
   function replaceCart(newLineItems) {
     return new Promise((resolve) => {
       const cart = JSON.parse(Cookies.get('cart'));
-      const graphQlQuery = replaceCartQuery();
 
       const query = {
         method: 'post',
@@ -113,7 +89,7 @@ export default () => {
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
         body: JSON.stringify({
-          query: graphQlQuery,
+          query: checkoutLineItemsReplace,
           variables: {
             checkoutId: cart.id,
             lineItems: newLineItems,
@@ -124,46 +100,16 @@ export default () => {
       fetch(`${shopUrl}/api/graphql`, query)
         .then((response) => response.json())
         .then((response) => {
+          if (response.errors) {
+            throw new Error(response.errors[0].message);
+          }
+
           resolve(response);
         })
         .catch((error) => {
-          window.console.log('replaceCart Error', error);
+          window.console.log('replaceCart', error);
         });
     });
-  }
-
-  /**
-   * Add to cart (replace cart mutation).
-   */
-  function replaceCartQuery() {
-    return `
-      mutation checkoutLineItemsReplace($checkoutId: ID!, $lineItems: [CheckoutLineItemInput!]!) {
-        checkoutLineItemsReplace(checkoutId: $checkoutId, lineItems: $lineItems) {
-          checkout {
-            lineItems(first: 20) {
-              edges {
-                node {
-                  variant {
-                    id
-                    title
-                    priceV2 {
-                      amount
-                    }
-                  }
-                  quantity
-                  title
-                }
-              }
-            }
-          }
-          userErrors {
-            code
-            field
-            message
-          }
-        }
-      }
-    `;
   }
 
   return Object.freeze({

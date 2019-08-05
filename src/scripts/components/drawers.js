@@ -26,7 +26,7 @@ export default () => {
   const nodeSelectors = {
     overlay: document.querySelector(selectors.overlay),
     container: document.querySelector(selectors.container),
-    close: document.querySelectorAll(selectors.close),
+    close: [...document.querySelectorAll(selectors.close)],
   };
 
   /**

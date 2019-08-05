@@ -8,6 +8,10 @@
  */
 import fetch from 'node-fetch';
 
+import collectionByHandle from './queries/collectionByHandle.graphql';
+import productByHandle from './queries/productByHandle.graphql';
+import products from './queries/productsSearch.graphql';
+
 /**
  * Global variables.
  */
@@ -19,67 +23,39 @@ export default () => {
   /**
    * Get products from a collection by handle.
    * @param {String} handle the collection handle.
-   * @param {Number} limit number of products to load.
    */
-  function getCollectionByHandle(handle, limit) {
+  function getCollectionByHandle(handle) {
     return new Promise((resolve) => {
+      const graphqlQuery = collectionByHandle;
+
       const query = {
         method: 'post',
         headers: {
           'Content-Type': 'application/graphql',
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
-        body: getCollectionByHandleQuery(handle, limit),
+        body: JSON.stringify({
+          query: graphqlQuery,
+          variables: {
+            handle,
+          },
+        }),
       };
 
       fetch(`${shopUrl}/api/graphql`, query)
         .then((response) => response.json())
         .then((response) => {
+          if (response.errors) {
+            throw new Error(response.errors[0].message);
+          }
+
           const collection = response.data.collectionByHandle;
           resolve(convertGetCollectionByHandleResponse(collection));
         })
         .catch((error) => {
-          window.console.log('getCollectionByHandle Error', error);
+          window.console.log('getCollectionByHandle', error);
         });
     });
-  }
-
-  /**
-   * Collection and its products query.
-   * @param {String} handle the collection handle.
-   * @param {Number} limit number of products to load.
-   */
-  function getCollectionByHandleQuery(handle, limit) {
-    return `
-      {
-        collectionByHandle(handle: "${handle}") {
-          products(first: ${limit}) {
-            edges {
-              node {
-                id
-                title
-                handle
-                images(first: 1) {
-                  edges {
-                    node {
-                      originalSrc
-                      altText
-                    }
-                  }
-                }
-                collections(first: 5) {
-                  edges {
-                    node {
-                      handle
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
   }
 
   /**
@@ -122,55 +98,28 @@ export default () => {
           'Content-Type': 'application/graphql',
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
-        body: getProductByHandleQuery(handle),
+        body: JSON.stringify({
+          query: productByHandle,
+          variables: {
+            handle,
+          },
+        }),
       };
 
       fetch(`${shopUrl}/api/graphql`, query)
         .then((response) => response.json())
         .then((response) => {
+          if (response.errors) {
+            throw new Error(response.errors[0].message);
+          }
+
           const product = response.data.productByHandle;
           resolve(convertGetProductByHandleResponse(product));
         })
         .catch((error) => {
-          window.console.log('getProductByHandle Error', error);
+          window.console.log('getProductByHandle', error);
         });
     });
-  }
-
-  /**
-   * Product query.
-   * @param {String} handle the product handle.
-   */
-  function getProductByHandleQuery(handle) {
-    return `
-      {
-        productByHandle(handle: "${handle}") {
-          id
-          title
-          handle
-          descriptionHtml
-          images(first: 1) {
-            edges {
-              node {
-                originalSrc
-                altText
-              }
-            }
-          }
-          variants(first: 10) {
-            edges {
-              node {
-                title
-                id
-                priceV2 {
-                  amount
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
   }
 
   /**
@@ -213,51 +162,28 @@ export default () => {
           'Content-Type': 'application/graphql',
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
-        body: getProductBySearchStringQuery(searchString),
+        body: JSON.stringify({
+          query: products,
+          variables: {
+            searchString,
+          },
+        }),
       };
 
       fetch(`${shopUrl}/api/graphql`, query)
         .then((response) => response.json())
         .then((response) => {
-          const products = response.data.products;
-          resolve(convertGetProductBySearchStringResponse(products));
+          if (response.errors) {
+            throw new Error(response.errors[0].message);
+          }
+
+          const searchResult = response.data.products;
+          resolve(convertGetProductBySearchStringResponse(searchResult));
         })
         .catch((error) => {
-          window.console.log('getProductBySearchString Error', error);
+          window.console.log('getProductBySearchString', error);
         });
     });
-  }
-
-  /**
-   * Product query.
-   * @param {String} searchString the search query.
-   */
-  function getProductBySearchStringQuery(searchString) {
-    return `
-      {
-        products(first: 3, query: "${searchString}") {
-          edges {
-            node {
-              handle
-              title
-              images(first: 1) {
-                edges {
-                  node {
-                    originalSrc
-                    altText
-                  }
-                }
-              }
-              priceRange {
-                minVariantPrice {
-                  amount
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
   }
 
   /**

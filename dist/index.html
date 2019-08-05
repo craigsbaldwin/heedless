@@ -103,7 +103,7 @@
       <!--
         CHECKOUT DRAWER
       -->
-      <div class="drawer drawer--checkout" js-cart="drawer">
+      <div class="drawer drawer--checkout" js-checkout="drawer">
         <div class="drawer__header">
           <span class="drawer__title">Enter details</span>
 
@@ -116,13 +116,37 @@
           </button>
         </div>
 
-        <div class="drawer__content" js-cart="lineItems">
+        <div class="drawer__content">
+          <div class="drawer__form" js-checkout="form">
+            <label class="drawer__label" for="email">
+              Email
+            </label>
 
+            <input
+              id="email"
+              class="drawer__form-item"
+              js-checkout="email"
+              js-form="required"
+            >
+
+            <label class="drawer__label" for="shipping">
+              Country
+            </label>
+
+            <select
+              id="shipping"
+              class="drawer__form-item drawer__select"
+              js-checkout="countries"
+              js-form="required"
+            >
+              <option selected="true">Loading</option>
+            </select>
+          </div>
         </div>
 
-        <div class="drawer__footer" js-cart="footer">
+        <div class="drawer__footer is-active">
           <a
-            class="header__checkout button button--large button--wide"
+            class="button button--large button--wide"
             href="/"
             js-checkout="link"
           >

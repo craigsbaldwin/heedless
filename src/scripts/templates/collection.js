@@ -53,7 +53,7 @@ export default () => {
 
     renderLoadingTemplate();
 
-    graphqlProducts().getCollectionByHandle(handle, 4)
+    graphqlProducts().getCollectionByHandle(handle)
       .then((response) => {
         if (response) {
           Heedless.eventBus.emit('Storage:update', response);

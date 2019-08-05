@@ -7,5 +7,6 @@
 export default {
   active: 'is-active',
   disabled: 'is-disabled',
+  error: 'has-error',
   loading: 'is-loading',
 };
