@@ -69,7 +69,15 @@ export default () => {
   function setEventListeners() {
     on('input', nodeSelectors.searchInput, debounce((event) => handleSearchInput(event), 500));
     on('focus', nodeSelectors.searchInput, (event) => handleSearchInput(event));
-    on('blur', nodeSelectors.searchInput, () => closeSearch());
+
+    /**
+     * Delay closing in case clicking should open product.
+     */
+    on('blur', nodeSelectors.searchInput, () => {
+      window.setTimeout(() => {
+        closeSearch();
+      }, 250);
+    });
   }
 
   /**

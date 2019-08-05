@@ -6,7 +6,7 @@
  * @namespace events
  *
  */
-import cssClasses from '../helpers/cssClasses';
+import cssClasses from './cssClasses';
 import {on} from './utils';
 
 /**
@@ -15,6 +15,7 @@ import {on} from './utils';
 const selectors = {
   overlay: '[js-page="overlay"]',
   page: '[js-site="page"]',
+  pageEvent: '[js-page]',
 };
 
 export default () => {
@@ -62,27 +63,29 @@ export default () => {
    */
   function setEventListeners() {
     on('click', document.querySelector('body'), (event) => {
-      if (isCorrectButton(event.target, 'addToCart')) {
-        handleAddToCartClick(event.target);
+      const target = event.target.closest(selectors.pageEvent);
+
+      if (isCorrectButton(target, 'addToCart')) {
+        handleAddToCartClick(target);
       }
 
-      if (isCorrectButton(event.target, 'viewProduct')) {
-        Heedless.eventBus.emit('Product:open', event.target.getAttribute('data-handle'));
+      if (isCorrectButton(target, 'viewProduct')) {
+        Heedless.eventBus.emit('Product:open', target.getAttribute('data-handle'));
       }
 
-      if (isCorrectButton(event.target, 'closeProduct')) {
+      if (isCorrectButton(target, 'closeProduct')) {
         Heedless.eventBus.emit('Product:close');
       }
 
-      if (isCorrectButton(event.target, 'toggleCartDrawer')) {
+      if (isCorrectButton(target, 'toggleCartDrawer')) {
         Heedless.eventBus.emit('Cart:openDrawer');
       }
 
-      if (isCorrectButton(event.target, 'overlay')) {
+      if (isCorrectButton(target, 'overlay')) {
         Heedless.eventBus.emit('Overlay:close');
       }
 
-      if (isCorrectButton(event.target, 'home')) {
+      if (isCorrectButton(target, 'home')) {
         handleHomeClick();
       }
     });
@@ -98,6 +101,7 @@ export default () => {
    */
   function isCorrectButton(target, attribute) {
     return (
+      target &&
       typeof target.attributes['js-page'] !== 'undefined' &&
       target.getAttribute('js-page') === attribute
     );

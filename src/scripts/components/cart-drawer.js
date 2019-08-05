@@ -190,7 +190,8 @@ export default () => {
   }
 
   /**
-   * Request line item data from GraphQL is incomplete data.
+   * Request line item data from GraphQL for incomplete data.
+   * This isn't possible, can't retrieve handle from line items.
    * @param {Object} lineItem the line item to request.
    */
   function requestLineItemData(lineItem) {

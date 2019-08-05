@@ -129,7 +129,6 @@ export default () => {
         if (response) {
           const cart = response.data.checkoutLineItemsReplace.checkout;
           Heedless.eventBus.emit('Cart:updated', cart);
-          console.log('response', cart);
           return;
         }
 
