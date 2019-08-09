@@ -27,11 +27,10 @@ export default () => {
   function getCollectionByHandle(handle) {
     return new Promise((resolve) => {
       const graphqlQuery = collectionByHandle;
-
       const query = {
         method: 'post',
         headers: {
-          'Content-Type': 'application/graphql',
+          'Content-Type': 'application/json',
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
         body: JSON.stringify({
@@ -95,7 +94,7 @@ export default () => {
       const query = {
         method: 'post',
         headers: {
-          'Content-Type': 'application/graphql',
+          'Content-Type': 'application/json',
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
         body: JSON.stringify({
@@ -159,7 +158,7 @@ export default () => {
       const query = {
         method: 'post',
         headers: {
-          'Content-Type': 'application/graphql',
+          'Content-Type': 'application/json',
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
         body: JSON.stringify({

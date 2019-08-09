@@ -29,7 +29,7 @@ export default () => {
       const query = {
         method: 'post',
         headers: {
-          'Content-Type': 'application/graphql',
+          'Content-Type': 'application/json',
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
         body: checkoutCreate,
@@ -55,7 +55,7 @@ export default () => {
       const query = {
         method: 'post',
         headers: {
-          'Content-Type': 'application/graphql',
+          'Content-Type': 'application/json',
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
         body: shipsToCountries,
@@ -85,7 +85,7 @@ export default () => {
       const query = {
         method: 'post',
         headers: {
-          'Content-Type': 'application/graphql',
+          'Content-Type': 'application/json',
           'X-Shopify-Storefront-Access-Token': accessToken,
         },
         body: JSON.stringify({
