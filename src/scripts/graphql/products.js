@@ -17,6 +17,11 @@ import products from './queries/productsSearch.graphql';
  */
 const shopUrl = 'https://heedless.myshopify.com';
 const accessToken = 'ebc823ca217a89fecdc9cce9f063e902';
+const method = 'post';
+const headers = {
+  'Content-Type': 'application/json',
+  'X-Shopify-Storefront-Access-Token': accessToken,
+};
 
 export default () => {
 
@@ -26,15 +31,11 @@ export default () => {
    */
   function getCollectionByHandle(handle) {
     return new Promise((resolve) => {
-      const graphqlQuery = collectionByHandle;
       const query = {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': accessToken,
-        },
+        method,
+        headers,
         body: JSON.stringify({
-          query: graphqlQuery,
+          query: collectionByHandle,
           variables: {
             handle,
           },
@@ -92,11 +93,8 @@ export default () => {
   function getProductByHandle(handle) {
     return new Promise((resolve) => {
       const query = {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': accessToken,
-        },
+        method,
+        headers,
         body: JSON.stringify({
           query: productByHandle,
           variables: {
@@ -156,11 +154,8 @@ export default () => {
   function getProductBySearchString(searchString) {
     return new Promise((resolve) => {
       const query = {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': accessToken,
-        },
+        method,
+        headers,
         body: JSON.stringify({
           query: products,
           variables: {

@@ -17,6 +17,11 @@ import checkoutLineItemsReplace from './queries/checkoutLineItemsReplace.graphql
  */
 const shopUrl = 'https://heedless.myshopify.com';
 const accessToken = 'ebc823ca217a89fecdc9cce9f063e902';
+const method = 'post';
+const headers = {
+  'Content-Type': 'application/json',
+  'X-Shopify-Storefront-Access-Token': accessToken,
+};
 
 export default () => {
 
@@ -28,11 +33,8 @@ export default () => {
       const cart = JSON.parse(Cookies.get('cart'));
 
       const query = {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': accessToken,
-        },
+        method,
+        headers,
         body: JSON.stringify({
           query: checkoutAttributesUpdateV2,
           variables: {
@@ -83,11 +85,8 @@ export default () => {
       const cart = JSON.parse(Cookies.get('cart'));
 
       const query = {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': accessToken,
-        },
+        method,
+        headers,
         body: JSON.stringify({
           query: checkoutLineItemsReplace,
           variables: {

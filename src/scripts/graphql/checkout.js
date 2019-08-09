@@ -18,6 +18,11 @@ import checkoutEmailUpdateV2 from './queries/checkoutEmailUpdateV2.graphql';
  */
 const shopUrl = 'https://heedless.myshopify.com';
 const accessToken = 'ebc823ca217a89fecdc9cce9f063e902';
+const method = 'post';
+const headers = {
+  'Content-Type': 'application/json',
+  'X-Shopify-Storefront-Access-Token': accessToken,
+};
 
 export default () => {
 
@@ -27,11 +32,8 @@ export default () => {
   function createCheckout() {
     return new Promise((resolve) => {
       const query = {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': accessToken,
-        },
+        method,
+        headers,
         body: checkoutCreate,
       };
 
@@ -53,22 +55,20 @@ export default () => {
   function getShipsToCountries() {
     return new Promise((resolve) => {
       const query = {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': accessToken,
-        },
+        method,
+        headers,
         body: shipsToCountries,
       };
 
       fetch(`${shopUrl}/api/graphql`, query)
         .then((response) => response.json())
         .then((response) => {
+          console.log('response', response)
           const countries = response.data.shop.shipsToCountries;
           resolve(countries);
         })
         .catch((error) => {
-          window.console.log('getShipsToCountries Error', error);
+          window.console.log('getShipsToCountries', error);
         });
     });
   }
@@ -83,11 +83,8 @@ export default () => {
       const graphQlQuery = checkoutEmailUpdateV2;
 
       const query = {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': accessToken,
-        },
+        method,
+        headers,
         body: JSON.stringify({
           query: graphQlQuery,
           variables: {
