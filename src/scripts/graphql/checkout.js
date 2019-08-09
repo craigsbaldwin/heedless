@@ -18,6 +18,7 @@ import checkoutEmailUpdateV2 from './queries/checkoutEmailUpdateV2.graphql';
  */
 const shopUrl = 'https://heedless.myshopify.com';
 const accessToken = 'ebc823ca217a89fecdc9cce9f063e902';
+const path = `${shopUrl}/api/graphql`;
 const method = 'post';
 const headers = {
   'Content-Type': 'application/json',
@@ -37,7 +38,7 @@ export default () => {
         body: checkoutCreate,
       };
 
-      fetch(`${shopUrl}/api/graphql`, query)
+      fetch(path, query)
         .then((response) => response.json())
         .then((response) => {
           const checkout = response.data.checkoutCreate.checkout;
@@ -60,10 +61,10 @@ export default () => {
         body: shipsToCountries,
       };
 
-      fetch(`${shopUrl}/api/graphql`, query)
+      fetch(path, query)
         .then((response) => response.json())
         .then((response) => {
-          console.log('response', response)
+          console.log('response', response);
           const countries = response.data.shop.shipsToCountries;
           resolve(countries);
         })
@@ -96,7 +97,7 @@ export default () => {
 
       console.log('query', query);
 
-      fetch(`${shopUrl}/api/graphql`, query)
+      fetch(path, query)
         .then((response) => response.json())
         .then((response) => {
           if (response.errors) {

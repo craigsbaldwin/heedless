@@ -17,6 +17,7 @@ import products from './queries/productsSearch.graphql';
  */
 const shopUrl = 'https://heedless.myshopify.com';
 const accessToken = 'ebc823ca217a89fecdc9cce9f063e902';
+const path = `${shopUrl}/api/graphql`;
 const method = 'post';
 const headers = {
   'Content-Type': 'application/json',
@@ -42,7 +43,7 @@ export default () => {
         }),
       };
 
-      fetch(`${shopUrl}/api/graphql`, query)
+      fetch(path, query)
         .then((response) => response.json())
         .then((response) => {
           if (response.errors) {
@@ -103,7 +104,7 @@ export default () => {
         }),
       };
 
-      fetch(`${shopUrl}/api/graphql`, query)
+      fetch(path, query)
         .then((response) => response.json())
         .then((response) => {
           if (response.errors) {
@@ -164,7 +165,7 @@ export default () => {
         }),
       };
 
-      fetch(`${shopUrl}/api/graphql`, query)
+      fetch(path, query)
         .then((response) => response.json())
         .then((response) => {
           if (response.errors) {
