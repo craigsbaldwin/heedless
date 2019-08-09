@@ -6,7 +6,7 @@
  * @namespace storage
  *
  */
-import _merge from 'lodash.merge';
+import _merge from 'lodash-es/merge';
 
 export default() => {
 
