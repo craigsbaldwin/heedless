@@ -7,11 +7,11 @@
  *
  */
 import fetch from 'node-fetch';
-import Cookies from 'js-cookie';
 
 import checkoutCreate from './queries/checkoutCreate.graphql';
 import shipsToCountries from './queries/shipsToCountries.graphql';
 import checkoutEmailUpdateV2 from './queries/checkoutEmailUpdateV2.graphql';
+import checkoutDiscountCodeApplyV2 from './queries/checkoutDiscountCodeApplyV2.graphql';
 
 /**
  * Global variables.
@@ -21,6 +21,10 @@ const accessToken = 'ebc823ca217a89fecdc9cce9f063e902';
 const path = `${shopUrl}/api/graphql`;
 const method = 'post';
 const headers = {
+  'Content-Type': 'application/graphql',
+  'X-Shopify-Storefront-Access-Token': accessToken,
+};
+const headersJson = {
   'Content-Type': 'application/json',
   'X-Shopify-Storefront-Access-Token': accessToken,
 };
@@ -41,11 +45,15 @@ export default () => {
       fetch(path, query)
         .then((response) => response.json())
         .then((response) => {
+          if (response.errors) {
+            throw new Error(response.errors[0].message);
+          }
+
           const checkout = response.data.checkoutCreate.checkout;
           resolve(checkout);
         })
         .catch((error) => {
-          window.console.log('createCheckout Error', error);
+          window.console.log('createCheckout', error);
         });
     });
   }
@@ -64,7 +72,10 @@ export default () => {
       fetch(path, query)
         .then((response) => response.json())
         .then((response) => {
-          console.log('response', response);
+          if (response.errors) {
+            throw new Error(response.errors[0].message);
+          }
+
           const countries = response.data.shop.shipsToCountries;
           resolve(countries);
         })
@@ -80,27 +91,29 @@ export default () => {
    */
   function updateEmail(emailAddress) {
     return new Promise((resolve) => {
-      const cart = JSON.parse(Cookies.get('cart'));
-      const graphQlQuery = checkoutEmailUpdateV2;
-
+      const cart = Heedless.cart.get();
       const query = {
         method,
-        headers,
+        headersJson,
         body: JSON.stringify({
-          query: graphQlQuery,
+          query: checkoutDiscountCodeApplyV2,
           variables: {
             checkoutId: cart.id,
-            email: emailAddress,
+            discountCode: emailAddress,
           },
         }),
       };
 
-      console.log('query', query);
+      console.log('query', cart.id);
 
       fetch(path, query)
-        .then((response) => response.json())
+        .then((response) => {
+          console.log('response', response);
+          response.json();
+        })
         .then((response) => {
           if (response.errors) {
+            console.log('errors', response.errors);
             throw new Error(response.errors[0].message);
           }
 

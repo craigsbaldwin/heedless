@@ -53,7 +53,7 @@ export default () => {
    * Create cart if it doesn't already exist.
    */
   function createCart() {
-    const cart = Cookies.getJSON('cart');
+    const cart = Heedless.cart.get();
 
     if (cart) {
       Heedless.eventBus.emit('Cart:created', cart.webUrl);
@@ -128,8 +128,8 @@ export default () => {
     graphqlCart().replaceCart(lineItems)
       .then((response) => {
         if (response) {
-          const cart = response.data.checkoutLineItemsReplace.checkout;
-          Heedless.eventBus.emit('Cart:updated', cart);
+          const cartLineItems = response.data.checkoutLineItemsReplace.checkout;
+          Heedless.eventBus.emit('Cart:updated', cartLineItems);
           return;
         }
 
@@ -142,7 +142,7 @@ export default () => {
    * Set the cart counter.
    */
   function setCartCounter() {
-    const cart = Cookies.getJSON('cart');
+    const cart = Heedless.cart.get();
 
     if (cart && cart.totalCount) {
       nodeSelectors.cartCounter.forEach((element) => {
@@ -200,7 +200,7 @@ export default () => {
     /**
      * Update cookie.
      */
-    const cart = Cookies.getJSON('cart');
+    const cart = Heedless.cart.get();
 
     cart.totalCount = counter;
     cart.totalCost = cost;
@@ -218,7 +218,7 @@ export default () => {
    * Update email or shipping details.
    */
   function updateDetails(checkout) {
-    const cart = Cookies.getJSON('cart');
+    const cart = Heedless.cart.get();
     cart.shipping += checkout;
     Cookies.set('cart', cart);
   }

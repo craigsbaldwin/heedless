@@ -31,8 +31,7 @@ export default () => {
    */
   function getCart() {
     return new Promise((resolve) => {
-      const cart = JSON.parse(Cookies.get('cart'));
-
+      const cart = Heedless.cart.get();
       const query = {
         method,
         headers,
@@ -83,8 +82,7 @@ export default () => {
    */
   function replaceCart(newLineItems) {
     return new Promise((resolve) => {
-      const cart = JSON.parse(Cookies.get('cart'));
-
+      const cart = Heedless.cart.get();
       const query = {
         method,
         headers,
@@ -98,7 +96,10 @@ export default () => {
       };
 
       fetch(path, query)
-        .then((response) => response.json())
+        .then((response) => {
+          console.log('replace', response);
+          response.json();
+        })
         .then((response) => {
           if (response.errors) {
             throw new Error(response.errors[0].message);

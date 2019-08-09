@@ -56,7 +56,7 @@ export default () => {
    * Render the cart drawer.
    */
   function renderDrawer() {
-    const cart = Cookies.getJSON('cart');
+    const cart = Heedless.cart.get();
 
     if (!cart.lineItems) {
       nodeSelectors.lineItems.innerHTML = '<p>No products</p>';

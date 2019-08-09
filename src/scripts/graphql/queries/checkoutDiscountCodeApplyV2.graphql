@@ -1,0 +1,16 @@
+mutation checkoutDiscountCodeApplyV2($checkoutId: ID!, $discountCode: String!) {
+  checkoutDiscountCodeApplyV2(checkoutId: $checkoutId, discountCode: $discountCode) {
+    discountApplications(first: 1) {
+      edges {
+        node {
+          value
+        }
+      }
+    }
+    checkoutUserErrors {
+      code
+      field
+      message
+    }
+  }
+}

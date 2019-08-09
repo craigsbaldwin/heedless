@@ -118,7 +118,7 @@ export default () => {
       Heedless.eventBus.emit('Checkout:updateShipping', Heedless.shipping);
     }
 
-    const cart = Cookies.getJSON('cart');
+    const cart = Heedless.cart.get();
 
     if (cart && cart.address) {
       Object.keys(cart.address).forEach((key) => {
